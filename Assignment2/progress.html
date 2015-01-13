@@ -1,0 +1,78 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+<title>Assignment 2 - Sample Outputs</title>
+</head><body>
+<center>
+<h3>Ray Tracer Results</h3>
+</center>
+<hr>
+<p>This page is designed to give you a sense of what your images should look like. In particular, it will show you
+the results that you should be getting as your progress through the implementations of the different features of the
+ray tracer. For all of these images, it is assumed that you have called:
+</p><blockquote>
+% Assignment2 --in test.ray --out test.bmp --width 500 --height 500 --rLimit 5 --cLimit 0.0001
+</blockquote>
+to generate the image output to <code>test.bmp</code>. (Make sure that you have downloaded not only
+<a href="RayFiles/test.ray"><code>test.ray</code></a> but also
+<a href="RayFiles/square.ray"><code>square.ray</code></a>
+and <a href="RayFiles/sphere.ray"><code>sphere.ray</code></a> as the file <code>test.ray</code> references these two.)
+<hr>
+<ul>
+<li>
+If you have written your <b>RaySphere</b>::<b>intersect</b> properly, the generated image should look like:
+<p><img src="progress_files/test1.jpg" width="250">
+</p></li><li>
+If you have written your <b>RayTriangle</b>::<b>intersect</b> properly, the generated image should look like:
+<p><img src="progress_files/test2.jpg" width="250">
+</p></li><li>
+If you have modified your <b>GetColor</b> so that it returns the emissive and ambient components of the lighting
+equation, the generated image should look like:
+<p><img src="progress_files/test3.jpg" width="250">
+</p></li><li>
+If you have written your <b>RayLight</b>::<b>getDiffuse</b> properly, the generated image should look like:
+<p><img src="progress_files/test4.jpg" width="250">
+</p></li><li>
+If you have written your <b>RayLight</b>::<b>getSpecular</b> properly, the generated image should look like:
+<p><img src="progress_files/test5.jpg" width="250">
+</p></li><li>
+If you have written your <b>RayLight</b>::<b>isInShadow</b> properly, the generated image should look like:
+<p><img src="progress_files/test6.jpg" width="250">
+</p></li><li>
+If you have modified your <b>RayGroup</b>::<b>intersect</b> so that it takes into account the associated transformation
+of the scene-graph node, the generated image should look like:
+<p><img src="progress_files/test7.jpg" width="250">
+</p></li><li>
+If you have modified your <b>GetColor</b> to recursively cast rays in the reflected direction, the
+generated image should look like:
+<p><img src="progress_files/test8.jpg" width="250">
+</p></li><li>
+If you have modified your <b>GetColor</b> to recursively cast rays in the transparent direction, the
+generated image should look like:
+<p><img src="progress_files/test9.jpg" width="250">
+</p></li><li>
+If you have implemented your <b>RayLight</b>::<b>transparency</b> to use partial shadows, the generated image should
+look like:
+<p><img src="progress_files/test10.jpg" width="250">
+</p></li></ul>
+<hr>
+Once you have implemented your accerelated ray-tracer, you may want to try running it on some of the more complex
+models. <b>It is not recommended that you try running your ray-tracer on these models if you have not implemented
+acceleration. The models consist of thousands of triangles and will take just shy of forever to ray-tracer without
+acceleration.</b>
+<ul>
+<li>
+The resulting image you would get from running your ray-tracer on the <a href="RayFiles/dog.ray"><code>dog.ray</code></a> should look
+like:
+<p><img src="progress_files/dog.jpg" width="250">
+</p></li><li>
+The resulting image you would get from running your ray-tracer on the <a href="RayFiles/bunny.ray"><code>bunny.ray</code></a> should look
+like:
+<p><img src="progress_files/bunny.jpg" width="250">
+</p></li><li>
+The resulting image you would get from running your ray-tracer on the <a href="RayFiles/buddha.ray"><code>buddha.ray</code></a> should look
+like:
+<p><img src="progress_files/buddha.jpg" width="250">
+
+</p></li></ul>
+</body></html>

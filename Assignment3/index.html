@@ -1,0 +1,296 @@
+<html><head><title>CS 4810: Introduction to Computer Graphics</title></head><body bgcolor="#ffffff">
+
+<table border="0" cellpadding="5" cellspacing="0" width="100%">
+<tr>
+  <td align="left" valign="middle">
+    <h2>
+    CS 4810: Introduction to Computer Graphics <br>
+    Spring 2015 <br>
+    </h2>
+  </td>
+</tr>
+</table>
+
+<br>
+
+<a href="../index.html">Home</a> |
+<a href="../schedule.html">Schedule</a> |
+<a href="../assignments.html">Assignments</a>
+<hr noshade color="#000000">
+
+<h2>Programming Assignment 3: OpenGL</h2>
+
+<b>Due Thursday, 4/16 at 11:55PM</b>
+
+<hr>
+<h3>Overview</h3>
+<blockquote>
+<p>
+This assignment serves as an introduction to the OpenGL graphics
+library. You will be required to generate a room scene which can be
+navigated in a walk-through fashion. You will begin the project by
+implementing the OpenGL analogs of many of the methods that you have
+implemented for the last ray-tracer assignment. Emphasis is placed
+both upon the implemention of OpenGL's basic capabilities
+(e.g. shading. lighting, transparency, materials properties, etc.) and
+their use in generating more involved effects (e.g.  shadows,
+reflections.)
+</p>
+<p>
+For this assignment you will continue with the code
+base from the previous assignment, implementing the OpenGL related
+methods. There are some small modifications that you will need to make
+to your code described in the <b>Code Modifications</b> section
+below. It is <em>highly</em> recommended that you make a copy of your
+old code before you start working on the new methods (use git!).
+
+</p><p>
+
+</p><p>An overview of the <b>code</b> you will be using can be found
+<a
+href="../Assignment2/Documentation/index.html">here</a>.
+
+</p><p>An overview of the <code>.ray</code> file <b>syntax</b> can be
+found <a href="syntax.html">here</a>.
+
+</p><p>A (Win32) compiled version of the renderer implementing some of
+the basic features can be found <a
+href="Assignment3.exe">here</a>. (If the previous executable does not
+work, try <a href="Assignment3.zip">this one</a>.)
+
+</p><p> The OpenGL programming Guide is an invaluable resource in assisting with OpenGL implementation. You can find a link
+to the guide 
+<a href="http://www.glprogramming.com/red/">here</a> and <a href="http://www.glprogramming.com/blue/">here</a>.
+
+</p></blockquote>
+
+<hr>
+<h3>Code Modifications</h3>The code you will be starting with in this
+assignment is essentially the same code you used for the previous
+assignment. However,
+there are a few small changes:
+<ul>
+<li> You will need to use the new <a href="Code/main.cpp"><code>main.cpp</code></a> file.
+</li><li> The <a href="Code/rayWindow.h"><code>Ray/rayWindow.h</code></a> file has been modified by adding the keyword <code>public</code>
+at the beginning of the class definition. (Without this modification, the necessary code will not compile.)
+</li><li> For those of you who have not (properly) implemented the <a href="../Assignment2/Documentation/class_ray_shape.html"><b>RayShape::setBoundingBox</b></a>
+for the different subclasses of <b>RayShape</b> implementation of these methods is provided for this assignment.
+(The method is needed to determine the center and radius of the scene.) The changes can be found in the following files:
+<ul>
+<li><a href="Code/rayBox.todo.cpp"><code>Ray/rayBox.todo.cpp</code></a>
+</li><li><a href="Code/rayCone.todo.cpp"><code>Ray/rayCone.todo.cpp</code></a>
+</li><li><a href="Code/rayCylinder.todo.cpp"><code>Ray/rayCylinder.todo.cpp</code></a>
+</li><li><a href="Code/rayGroup.todo.cpp"><code>Ray/rayGroup.todo.cpp</code></a>
+</li><li><a href="Code/raySphere.todo.cpp"><code>Ray/raySphere.todo.cpp</code></a>
+</li><li><a href="Code/rayTriangle.todo.cpp"><code>Ray/rayTriangle.todo.cpp</code></a>
+</li></ul>
+</li></ul>
+<hr>
+<h3>How the Program Works</h3>
+<blockquote>The program takes in as a mandatory arguments the input (<code>.ray</code>) .ray file name. Additionally,
+you can also pass in the dimensions of the viewing window and the complexity of the tesselation for objects like the
+sphere, the cylinder, and the cone. It is invoked from the command line with:
+<blockquote><code>% Assignment3 --in in.ray --width w --height h --cplx c</code></blockquote>
+Feel free to add new arguments to deal with the new functionalities you are implementing. Just make sure they are
+documented. </blockquote>
+
+<hr>
+<h3>What You Have to Do</h3>
+<blockquote>
+<p>The assignment is worth 30 points. The following is a list of features that you 
+may implement. The number in parentheses corresponds to how many points it is 
+worth.
+
+</p><ul>
+<li>
+(1) Implement the
+<a href="../Assignment2/Documentation/class_ray_camera.html"><b>RayCamera::drawOpenGL</b></a>
+(in <code>Ray/rayCamera.todo.cpp</code>) to draw the camera.
+</li><li>
+(1) Implement the
+<a href="../Assignment2/Documentation/class_ray_group.html"><b>RayGroup::drawOpenGL</b></a>
+(in <code>Ray/rayGroup.todo.cpp</code>) to draw the scene-graph nodes. For now ignore the
+local transformation information and simply draw all the 
+<b><a href="../Assignment2/Documentation/class_ray_shape.html">RayShape</a></b>s associated to the
+<b><a href="../Assignment2/Documentation/class_ray_group.html">RayGroup</a></b>.
+</li><li>
+(1) Implement the <a href="../Assignment2/Documentation/class_ray_sphere.html"><b>RaySphere::drawOpenGL</b></a>
+(in <code>Ray/raySphere.todo.cpp</code>) method to draw a sphere at the appropriate tesselation.
+For now, you can ignore the input <code>materialIndex</code> parameter and have the
+method return -1. (You may want to consider using the <code>gluSphere</code> function from the GLU
+library to assist you with this.) 
+</li><li>
+(2) Implement the
+<a href="../Assignment2/Documentation/class_ray_triangle.html"><b>RayTriangle::drawOpenGL</b></a>
+(in <code>Ray/rayTriangle.todo.cpp</code>) method to draw a triangle with per-vertex normals. For now, ignore the texture coordinates
+and the input <code>materialIndex</code> parameter, and have the method return -1.
+</li><li>
+(2) Impelement the
+<a href="../Assignment2/Documentation/class_ray_material.html"><b>RayMaterial::drawOpenGL</b></a>
+(in <code>Ray/rayScene.todo.cpp</code>) method to draw the material properties.
+</li><li>
+(3) To draw the light sources, implement:
+<ul>
+<li>
+<a href="../Assignment2/Documentation/class_ray_directional_light.html"><b>RayDirectionalLight::drawOpenGL</b></a>
+(in <code>Ray/rayDirectionalLight.todo.cpp</code>);
+</li><li>
+<a href="../Assignment2/Documentation/class_ray_point_light.html"><b>RayPointLight::drawOpenGL</b></a>
+(in <code>Ray/rayPointLight.todo.cpp</code>); and
+</li><li>
+<a href="../Assignment2/Documentation/class_ray_spot_light.html"><b>RaySpotLight::drawOpenGL</b></a>
+(in <code>Ray/raySpotLight.todo.cpp</code>)
+</li></ul>
+The input <code>index</code> parameter specifies which of the OpenGL lights you are using and should be used for
+specifying the light parameters in the <code>RayLight::drawOpenGL</code> method:
+<blockquote>
+	<code>glLightfv(GL_LIGHT0+index, ...);<br>
+	glEnable(GL_LIGHT0+index);</code>
+</blockquote>
+</li><li>
+(2) Modify the implementation of
+<a href="../Assignment2/Documentation/class_ray_group.html"><b>RayGroup::drawOpenGL</b></a>
+(in <code>Ray/rayGroup.todo.cpp</code>) 
+to take into account the local transformation returned by the call:
+<a href="../Assignment2/Documentation/class_ray_group.html"><b>RayGroup::getMatrix</b></a>. You can do this by pushing
+the appropriate matrix onto the stack prior to rendering and then popping it off after you are done.
+</li><li>
+(2) Accelerate OpenGL rendering by using call-lists. To do this you will have to:
+<ul>
+<li>
+Implement
+<a href="../Assignment2/Documentation/class_ray_group.html"><b>RayGroup::getOpenGLCallList</b></a>
+(in <code>Ray/rayGroup.todo.cpp</code>) to generate a single call list for all of the
+children of the <b>RayGroup</b>.
+</li><li>
+Modify the implementation of
+<a href="../Assignment2/Documentation/class_ray_group.html"><b>RayGroup::drawOpenGL</b></a>
+(in <code>Ray/rayGroup.todo.cpp</code>) so that if the value of <code>openGLCallListID</code> is zero, 
+you simply draw the shapes as you had previously. Otherwise, invoke the OpenGL command to draw the
+call-list using the call-list ID. (Note that the initialization will take care of actually calling
+<a href="../Assignment2/Documentation/class_ray_group.html"><b>RayGroup::getOpenGLCallList</b></a> so you don't have to.)
+<!--
+(in <code>Ray/rayGroup.todo.cpp</code>) so that if:
+<ul>
+<li> The current value of <code>RayGroup::openGLCallListID</CODE> is zero, and
+<li> the <code>RayGroup</code> object is not static (as determined by calling the
+<A HREF="Documentation\class_ray_shape.html"><B>RayShape::isStatic</B></A> method),
+</ul>
+the value of <code>RayGroup::openGLCallListID</code> is set to the value returned
+by <code>RayGroup::getOpenGLCallList</code>. Then, after applying all the necessary
+transformations, test if the value of <code>openGLCallListID</code> is zero. If it
+is, then simply draw the shapes as you had previously. Otherwise, invoke the OpenGL
+command to draw the call-list.
+-->
+</li></ul>
+</li><li>
+(3) Implement triangle texture mapping. To do this you will have to:
+<ul>
+<li>
+Modify the implementation of
+<a href="../Assignment2/Documentation/class_ray_triangle.html"><b>RayTriangle::drawOpenGL</b></a>
+(in <code>Ray/rayTriangle.todo.cpp</code>) to specify the texture coordinates prior to specifying the vertex positions.
+</li><li>
+Modify the implementation of
+<a href="../Assignment2/Documentation/class_ray_material.html"><b>RayMaterial::drawOpenGL</b></a>
+(in <code>Ray/RayScene.todo.cpp</code>) method to enable and bind the texture if it is present.
+</li><li>
+Modify the implementation of
+<a href="../Assignment2/Documentation/class_ray_texture.html"><b>RayTexture::setUpOpenGL</b></a>
+(in <code>Ray/RayScene.todo.cpp</code>) method to generate the texture handle.
+</li></ul>
+</li><li>
+(1) Implement the
+<a href="../Assignment2/Documentation/class_ray_box.html"><b>RayBox::drawOpenGL</b></a>
+(in <code>Ray/rayBox.todo.cpp</code>) method to draw a box.
+</li><li>
+(1) Implement the
+<a href="../Assignment2/Documentation/class_ray_cylinder.html"><b>RayCylinder::drawOpenGL</b></a>
+(in <code>Ray/rayCylinder.todo.cpp</code>) method to draw a cylinder with bottom and top caps
+at the appropriate tesselation. (You may want to consider using the <code>gluCylinder</code>
+and <code>gluDisk</code> functions from the GLU library to assist you with this.) 
+</li><li>
+(1) Implement the
+<a href="../Assignment2/Documentation/class_ray_cone.html"><b>RayCone::drawOpenGL</b></a>
+(in <code>Ray/rayCone.todo.cpp</code>) method to draw a cone capped off at the bottom
+at the appropriate tesselation. (You may want to consider using the <code>gluCylinder</code>
+and <code>gluDisk</code> functions from the GLU library to assist you with this.) 
+</li><li>(2)
+Implement mouse control to facilitate moving about the interior of the scene. As a minimum,
+you should implement a crystal-ball system in which dragging the left mouse button rotates
+the viewer around the model, rotating either about the up-direction or the right-direction.
+To do this you will have to modify:
+<ul>
+<li>
+<a href="../Assignment2/Documentation/class_ray_camera.html"><b>RayCamera::rotateUp</b></a>
+(in <code>Ray/rayCamera.todo.cpp</code>) to implement a rotation of <code>angle</code>
+degrees, around the up-axis, about the point <code>center</code>.
+</li><li>
+<a href="../Assignment2/Documentation/class_ray_camera.html"><b>RayCamera::rotateRight</b></a>
+(in <code>Ray/rayCamera.todo.cpp</code>) to implement a rotation of <code>angle</code>
+degrees, around the right-axis, about the point <code>center</code>.
+</li></ul>
+</li><li>(2) Implement full scene anti-aliasing using the accumulation buffer.
+Hint: See the OpenGL Programming Guide for information about jittering. 
+</li><li>
+Generate a <code>.ray</code> file describing a room scene with:
+<ul>
+  <li>(1) Four walls, a floor and ceiling. 
+  </li><li>(3) A table, several chairs, etc. You may choose more interesting furnishings.
+  </li><li>(1) At least one transparent surface, perhaps the table top. 
+  </li><li>(1) At least three texture mapped surfaces, each with a different texture. 
+  </li><li>(1) At least three point or spot light sources. 
+  </li><li>(2) A Luxo Jr. style lamp with keyboard and/or mouse controls for 
+  manipulating the joints of the lamp interactively while the spot light 
+  representing the bulb moves accordingly. Hint: see the robotic arm example in 
+  the OpenGL Programming Guide. 
+  </li><li>(2) A mirror. Hint: Reflect the world about the mirror and render it again 
+  through a stencil buffer. 
+  </li><li>(2) Shadows on at least one surface (such as the floor or table). Hint: 
+  See the OpenGL Programming Guide for the transformation which renders objects 
+  onto a plane. 
+  </li><li>(2) An object that responds to user mouse clicks (such as a light switch 
+  which turns on/off a light when clicked on by the user). 
+</li></ul>
+
+</li><li>(1) In general, making a call to OpenGL's <code>glMaterial*</code> commands can be
+somewhat expensive. Rather than calling these functions before you draw every <code>RayShape</code>,
+modify the <a href="../Assignment2/Documentation/class_ray_shape.html"><b>RayShape::drawOpenGL</b></a>
+of the different subclasses so that:
+<ul>
+<li> You first test if the if the index of the material associated to the primitive is the
+same as the input <code>materialIndex</code> paramter and only call the <code>RayMaterial::drawOpenGL</code>
+method if they differ.
+</li><li> Return the index of the last material used.
+</li></ul>
+</li><li> (2) Modify the OpenGL renderer to allow the user to ray-trace the scene from the same perspective as the <code>RayCamera</code>.
+</li><li> (?) Impress us with something we hadn't considered...
+</li></ul>
+
+
+The assignment will be graded out of <b>30 points</b>. In addition to implementing these features, there are several other ways to get more points:
+<ul>
+    <li>(1) Submitting one or more images for the art contests.
+    </li><li>(1) Submitting one or more .ray files for the art contests.
+    </li><li>(2) winning the regular art contest,
+    </li><li>(2) winning the .ray file art contest,
+</li></ul>
+<p>
+It is possible to get more than 30 points. However, after 30 points, each point is divided by 2, and after
+32 points, each point is divided by 4. If your raw score is 29, your final score will be 29. If the raw score
+is 33, you'll get 31.25. For a raw score of 36, you'll get 32.</p>
+</blockquote>
+<hr>
+<h3>What to Submit</h3>
+Submission intstructions are specified <a href="../assignments.html#submitting">here</a>.<br>
+Please include the following in your submission: 
+  <ul>
+    <li>the complete source code (with Makefile if compiling under Linux); 
+    </li><li>any .ray files you created.
+    </li><li>images for the art contest
+    </li><li>a writeup.
+  </li></ul>
+
+<hr>
+
+	</body></html>

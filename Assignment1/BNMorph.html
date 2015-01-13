@@ -1,0 +1,107 @@
+<html><head><title>Assignment 1: Morphing Help</title></head><body>
+
+<center>
+<h3>Morphing Help for Assignment 1: Image Processing</h3></center>
+<p align="left">This page is designed to give you a sense of what your images 
+should look like and to help you test your results as you go along. First, 
+recall that the command line is</p>
+<blockquote><code>% assignment1 --in source.bmp --bnMorph dest.bmp line_segment_pair_file 0.5 --out out.bmp</code> </blockquote>
+<p align="left">where <code>source.bmp</code> is the starting point for your morph, <code>dest.bmp</code> is 
+the ending point for your morph, 0.5 specifies how far along in the morph you are (in this case, half way) and
+<code>out.bmp</code> specifies the file into which the morph will be written. You also need to
+input a file that contains your control lines. What is the format of this file? It look like this</p>
+<p align="left">3&nbsp; <br>136&nbsp;&nbsp; 5&nbsp;&nbsp;&nbsp;&nbsp; 
+186&nbsp;&nbsp; 
+28&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 115&nbsp; 
+43&nbsp;&nbsp; 182&nbsp;&nbsp; 74&nbsp;&nbsp; <br>186&nbsp;&nbsp; 32&nbsp;&nbsp; 
+201&nbsp;&nbsp; 
+52&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+184&nbsp;&nbsp;79&nbsp;&nbsp; 198&nbsp;&nbsp;&nbsp;88&nbsp;&nbsp; 
+<br>205&nbsp;&nbsp; 55&nbsp;&nbsp;&nbsp;229&nbsp;&nbsp; 
+73&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 202&nbsp; 
+91&nbsp;&nbsp;&nbsp; 231 118&nbsp;</p>
+<p align="left">The first&nbsp;number, "3", tells us the total number of lines 
+contained in the file. Then, we just start listing source and dest line pairs in 
+the following way...&nbsp;&nbsp; 
+<br>&lt;source_line1_start_x&gt;&nbsp;&nbsp;&nbsp;&lt;source_line1_start_y&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;source_line1_end_x&gt;&nbsp;&nbsp;&nbsp;&lt;source_line1_end_y&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;dest_line1_start_x&gt;&nbsp;&nbsp;&nbsp;&lt;dest_line1_start_y&gt;...
+</p>
+<p align="left">and so on. So all the numbers in the left hand side correspond to 
+control line points in the source image, while all the numbers on the right 
+correspond to control line points in the destination image. We have given you 
+some very simple control line files to get started. Note that the image origin 
+is assumed to be in the upper left-hand corner of the image. </p>
+<p align="left">So, <a href="BNTestFiles">here are some test files</a> and results to get you started. The control lines have 
+been added to the images in this web page to help you understand what is going 
+on, but in the files available to you, they exist only in the line files. Note 
+that all these results were created using the default a, b, and p parameters 
+given on the assignment page and the (default) nearest neighbor sampling. Your 
+results should look much nicer if you use bilinear or gaussian sampling.</p>
+
+<h3 align="left">Test Case 1: Simple Translation</h3>
+<p align="left">Running this command line:<br>
+</p><blockquote>
+<code>% assignment1 --in F.bmp -bnMorph F_translated.bmp f_single_line_translate.txt 0.5 --out out.bmp</code>
+</blockquote>
+<p></p>
+<p>
+<img src="BNMorph_files/F.jpg" border="1" height="300">
+<img src="BNMorph_files/F_translated.jpg" border="1" height="300"> 
+<img src="BNMorph_files/morph_translated.jpg" border="1" height="300"> 
+</p><p>
+with the first two images as source and dest respectively will give you the 
+third image as the result. (That shadow around the F&nbsp; here and below tells 
+you that our control lines didn't match up perfectly.)</p>
+
+<h3 align="left">Test Case 2: Translation Plus Scale</h3>
+<p align="left">Running this command line:<br>
+</p><blockquote>
+<code>% assignment1 --in F.bmp --bnMorph F_translated_scaled.bmp f_single_line_translate_scale.txt 0.5 --out out.bmp</code>
+</blockquote>
+<p></p>
+<p>
+<img src="BNMorph_files/F.jpg" border="1" height="300">
+<img src="BNMorph_files/F_translated_scaled.jpg" border="1" height="300">
+<img src="BNMorph_files/morph_translated_scaled.jpg" border="1" height="300"> 
+</p><p>
+with the first two images as source and dest respectively will give you the 
+third image as the result.</p>
+
+<h3 align="left">Test Case 3: Translation Plus Rotation</h3>
+<p align="left">Running this command line:<br>
+</p><blockquote>
+<code>% assignment1 --in F.bmp --bnMorph F_rotated.bmp f_single_line_translate_rotate.txt 0.5 --out out.bmp</code>
+</blockquote>
+<p></p>
+<p>
+<img src="BNMorph_files/F.jpg" border="1" height="300">
+<img src="BNMorph_files/F_rotated.jpg" border="1" height="300">
+<img src="BNMorph_files/morph_rotated.jpg" border="1" height="300"> 
+</p><p>
+with the first two images as source and dest respectively will give you the 
+third image as the result.</p>
+
+<h3 align="left">Test Case 4: MultiLine</h3>
+<p align="left">Running this command line:<br>
+</p><blockquote>
+<code>% assignment1 --in F.bmp --bnMorph F_scaled_2d.bmp f_multi_line_scale.txt 0.5 --out out.bmp</code> 
+</blockquote>
+<p></p>
+<p>
+<img src="BNMorph_files/F_four_lines.jpg" border="1" height="300">
+<img src="BNMorph_files/F_scaled_2d.jpg" border="1" height="300">
+<img src="BNMorph_files/morph_four_lines.jpg" border="1" height="300"> 
+</p><p>
+with the first two images as source and dest respectively will give you the 
+third image as the result. Note that the morph is not angle preserving unless 
+you are lined up with control lines. (This is what is causing the funny behavior 
+at the bottom of the F and on the short edges.) </p>
+<h3 align="left">One last thing...</h3>
+<p align="left">After you have done all the above work, you may notice that it 
+doesn't look so nice when you are sampling outside of the image. (This is what 
+is causing the black border to get dragged in.) Depending upon the effect you 
+want to create, you can "clamp" the sampling in such a way that instead of 
+taking a black pixel "outside" of the image, you just choose the closest pixel 
+on the image boundary. This corresponds to thinking of your image as a rubber 
+sheet that is firmly attached at the boundaries. If you choose to do this, 
+handle it in the morph function; don't change your sampling function. And be 
+sure to document this in your write-up.</p></body></html>

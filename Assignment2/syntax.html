@@ -1,0 +1,244 @@
+<HTML><HEAD><TITLE>Syntax of .ray File Format</TITLE></HEAD>
+<BODY>
+<HR>
+<BR><B><FONT size=+3>Syntax of the .ray File Format</FONT></B> <BR>
+<HR>
+
+<P>For this project we define a rudimentary scene graph language. Each command 
+begins with a #-sign and goes on until the next command or until the end of the 
+file is reached. Commands may extend across new-line characters. All color 
+values are floating point values between 0.0 and 1.0, and all other numeric 
+expressions are assumed to be floating point, also, unless otherwise 
+noted.&nbsp; Angles are given in radians. When needed, the parser automatically 
+scales a vector to a unit-length vector. You should not that in order to define 
+triangles&nbsp; you must first define the vertices you will use and then index 
+them in the triangle definition. 
+<P><FONT size=+2>Commands:</FONT> 
+<P><B>#camera</B> <BR><B>&nbsp;&nbsp;&nbsp; px py pz</B> 
+<BR><B>&nbsp;&nbsp;&nbsp; dx dy dz</B> <BR><B>&nbsp;&nbsp;&nbsp; ux uy uz</B> 
+<BR><B>&nbsp;&nbsp;&nbsp; ha</B> 
+<P>This defines a perspective camera in the scene. <I>(px,py,pz)</I> is the 
+position of the camera in world coordinates, <I>(dx,dy,dz)</I> is a vector 
+describing the direction of the camera, and <I>(ux,uy,uz)</I> is a vector in the 
+up direction.&nbsp; The <!--half-height--> height angle of the viewing frustum is given by 
+<I>ha</I>, such that the <!--half-width--> width angle can be found by <I>ha*ar, </I>where 
+<I>ar</I> is the width-over-height aspect ratio of the output image (given on 
+the command line). The <I>camera</I> command must appear before of any 
+<I>Group</I> or <I>Shape</I> directives.&nbsp; The first <I>camera</I> found in 
+the file will be used, and subsequent <I>camera</I> definitions are ignored. 
+<P><B>#background</B> <BR><B>&nbsp;&nbsp;&nbsp; r g b</B> 
+<P>The background color defines the color to assign to rays which fail to 
+intersect any object, and leave the scene.&nbsp; Only the first 
+<I>background</I> definition encountered is used, and subsequent instances are 
+ignored.&nbsp; It must appear before any <I>Group</I> or <I>Shape</I> 
+directives.&nbsp; If not defined, a value of black is assumed. 
+<P><B>#ambient</B> <BR><B>&nbsp;&nbsp;&nbsp; r g b</B> 
+<P>Sets the global ambient light level. The first <I>ambient</I> definition is 
+used, and subsequent instances are ignored.&nbsp; It must appear before any 
+<I>Group</I> or <I>Shape</I> directives. If not defined, a value of black is 
+assumed. 
+<P><B>#light_num n</B> 
+<P>The total number of lights in the scene is given by this command.&nbsp; This 
+command must appear before any <I>light_*</I> definitions.&nbsp; It must appear 
+before any <I>Group</I> or <I>Shape</I> directives. If there are no lights in 
+the scene (only global ambient light), <I>light_num 0</I> need not be declared. 
+<P><B>#light_point</B> <BR><B>&nbsp;&nbsp;&nbsp; r g b</B> 
+<BR><B>&nbsp;&nbsp;&nbsp; px py pz</B> <BR><B>&nbsp;&nbsp;&nbsp; ca la qa</B> 
+<P>This defines a point light in the scene.&nbsp; <I>(r,g,b)</I> gives the color 
+of the light.&nbsp; In this ray tracer, use this single light color for diffuse 
+and specular contributions at each surface.&nbsp; Do not compute ambient 
+contributions from each light, but rather use the global ambient light defined 
+by the <I>ambient</I> directive.&nbsp; Each instance must appear before any 
+<I>Group</I> or <I>Shape</I> directives. 
+<P><I>(px,py,pz) </I>gives the position of the light in world coordinates.&nbsp; 
+The attenuation of the light with distance from its position is given by <I>ca, 
+la, </I>and <I>qa </I>which define the constant, linear and quadratic components 
+of the attenuation factor.&nbsp; If <I>d</I> is the distance from the light to 
+the surface, then the light's color at the surface is given by (<I>r,g,b</I>) 
+*<I>1.0/</I> (<I>ca </I>+ <I>la*d</I> + <I>qa*d*d</I>).&nbsp; Each coeficient 
+must be positive or equal to zero. Note: to achieve no attenuation use a 
+<I>(ca,la,qa)</I> of (<I>1.0,0.0,0.0</I>). 
+<P><B>#light_spot</B> <BR><B>&nbsp;&nbsp;&nbsp; r g b</B> 
+<BR><B>&nbsp;&nbsp;&nbsp; px py pz</B> <BR><B>&nbsp;&nbsp;&nbsp; dx dy dz</B> 
+<BR><B>&nbsp;&nbsp;&nbsp; ca la qa</B> <BR><B>&nbsp;&nbsp;&nbsp; sc sd</B> 
+<P>This defines a spot point light in the scene.&nbsp; <I>(r,g,b)</I> gives the 
+color of the light.&nbsp; In this ray tracer, use this single light color for 
+diffuse and specular contributions at each surface.&nbsp; Do not compute ambient 
+contributions from each light, but rather use the global ambient light defined 
+by the <I>ambient</I> directive. Each instance must appear before any 
+<I>Group</I> or <I>Shape</I> directives. 
+<P><I>(px,py,pz) </I>gives the position of the light in world coordinates, and 
+<I>(dx,dy,dz)</I> is a unit vector describing the direction of the 
+light.&nbsp;&nbsp; The attenuation of the light with distance from its position 
+is given by <I>ca, la, </I>and <I>qa </I>which define the constant, linear and 
+quadratic components of the attenuation factor.&nbsp; If <I>d</I> is the 
+distance from the light to the surface, then the light's color at the surface is 
+given by (<I>r,g,b</I>) *<I>1.0/</I> (<I>ca </I>+ <I>la*d</I> + 
+<I>qa*d*d</I>).&nbsp; Each coeficient must be positive or equal to zero. Note: 
+to achieve no attenuation use a <I>(ca,la,qa)</I> of (<I>1.0,0.0,0.0</I>). 
+<P>The spot light cutoff is given by <I>cs</I> and defines the half angle of 
+divergence of the light cone.&nbsp; It can be measured as the angle from the 
+center axis to the edge of the spot cone.&nbsp; It should be less than 
+<I>pi/2</I> radians.&nbsp; The fall off in intensity from the center axis to the 
+cone edge is given by the spot drop-off factor, <I>sd</I>.&nbsp; It can take 
+values from <I>0.0</I> to <I>128.0</I>, where <I>0.0</I> indicated constant 
+intensity across the cone, and <I>128.0</I> yields a sharp fall-off.&nbsp; The 
+cosine of the angle between light direction and the direction of a ray from 
+<I>(px,py,pz)</I> to the point being lit, raised to the power of <I>sd</I> 
+will yield the correct result. 
+<P><B>#light_dir</B> <BR><B>&nbsp;&nbsp;&nbsp; r g b</B> 
+<BR><B>&nbsp;&nbsp;&nbsp; dx dy dz</B> 
+<P>This defines a directional light in the scene.&nbsp; <I>(r,g,b)</I> gives the 
+color of the light.&nbsp; In this ray tracer, use this single light color for 
+diffuse and specular contributions at each surface.&nbsp; Do not compute ambient 
+contributions from each light, but rather use the global ambient light defined 
+by the <I>ambient</I> directive. Each instance must appear before any 
+<I>Group</I> or <I>Shape</I> directives. 
+<P><I>(dx,dy,dz) </I>is a vector giving the direction of the light in the scene. 
+Note that attenuation makes no sense for directional lights, and so is not a 
+parameter of this directive. 
+<P><B>#texture_num n</B> 
+<P>The total number of textures used in the scene is given by this 
+command.&nbsp; The command must appear before any <I>texture</I> AND/OR 
+<I>material</I> definitions.&nbsp; It must appear before any <I>Group</I> or 
+<I>Shape</I> directives. If there are no textures used, <I>texture_num 0</I> 
+need not be declared. 
+<P><B>#texture filename</B> 
+<P>Each texture used in the scene is declared by the <I>texture</I> directive 
+using the filename of the texture.&nbsp; The first texture declared will take 
+the interger identifier <I>0</I>, and subsequent textures will follow in order 
+(i.e. <I>1, 2, 3</I>, ...). This integer handle is used in <I>material 
+</I>definitions to indicate that the material includes the respective texture. 
+Textures need to be declared before materials. This declaration must appear 
+before any <I>Group</I> or <I>Shape</I> directives. 
+<P><B>#vertex_num n</B> <BR>The total number of vertices to be used in the 
+scene. The command must appear before any <I>vertex</I> definitions.&nbsp; This 
+declaration must appear before any <I>Group</I> or <I>Shape</I> directives. 
+<P><B>#vertex</B> <BR><B>&nbsp;&nbsp;&nbsp; px py pz</B> 
+<BR><B>&nbsp;&nbsp;&nbsp; nx ny nz</B> <BR><B>&nbsp;&nbsp;&nbsp; ts tt</B> 
+<BR>This defines a verex at position (<I>px,py,pz</I>) with normal 
+<I>(nx,ny,nz</I>) and texture coordinate (<I>ts,tt</I>). Each vertex used in the 
+scene is declared by the <I>vertex</I> directive. The first vertex declared will 
+take the interger identifier <I>0</I>, and subsequent vertices will follow in 
+order (i.e. <I>1, 2, 3</I>, ...). This integer handle is used in <I>triangle 
+</I>definitions to indicate which vertices make up the triangle. This 
+declaration must appear before any <I>Group</I> or <I>Shape</I> directives. 
+<P><B>#material_num n</B> 
+<P>The total number of materials used in the scene is given by this 
+command.&nbsp; The command must appear before any <I>material</I> 
+definitions.&nbsp; This declaration must appear before any <I>Group</I> or 
+<I>Shape</I> directives. 
+<P><B>#material</B>
+<BR><B>&nbsp;&nbsp;&nbsp; er eg eb</B>
+<BR><B>&nbsp;&nbsp;&nbsp; ar ag ab</B> 
+<BR><B>&nbsp;&nbsp;&nbsp; dr dg db</B>
+<BR><B>&nbsp;&nbsp;&nbsp; sr sg sb sfo</B> 
+<BR><B>&nbsp;&nbsp;&nbsp; tr tg tb</B> 
+<BR><B>&nbsp;&nbsp;&nbsp; ir</B>
+<BR><B>&nbsp;&nbsp;&nbsp; tn</B>
+<BR><B>&nbsp;&nbsp;&nbsp; !string!</B> 
+<P>Each material used in the scene is declared by the <I>material</I> 
+directive.&nbsp; The first material declared will take the interger identifier 
+<I>0</I>, and subsequent materials will follow in order (i.e. <I>1, 2, 3</I>, 
+...). This integer handle is used in <I>shape </I>definitions to indicate that 
+the rendering should occur with the appropriate material.&nbsp; This declaration 
+must appear before any <I>Group</I> or <I>Shape</I> directives. 
+<P>The colors (<I>er,eg,eb</I>), (<I>ar,ag,ab</I>), (<I>dr,dg,db</I>), and (<I>sr,sg,sb</I>)
+are the emmisive, ambient, diffuse, and specular colors of the 
+material, respectively. The emmisive material color acts 
+independently of any light source, the ambient material color is used in ambient 
+light calculation with the global ambient light color, and the diffuse and specular 
+material colors are used in diffuse and specular lighting computations with the 
+color of each light in the scene. 
+<P>The exponent <i>sfo</i> defines the specular 'shininess' (or 'fall-off') of the material,
+and takes  values from <I>0.0</I> to <I>128.0</I>. The cosine of the angle between the 
+ray direction and the specular reflection direction raised to the power of <i>sfo</i> 
+gives the specular highlight factor. <i>sr</i>, <i>sg</i>, and <i>sb</i> define the reflection 
+coefficient for recursive reflection rays. The index of refraction is given by 
+<I>ir</I> and is used in Snell's Law computations for refraction 
+direction.&nbsp; For non-closed surfaces, such as triangles, it is assumed that 
+<I>ir</I> is the index of refraction on the backside of the surface.&nbsp; For 
+closed surfaces, such as cones, it is assumed that <I>ir</I> is the index of 
+refraction on the inside of the surface. 
+<P>To assign a texture to this material, <I>tn</I> should be the integer handle 
+of the appropriate texture declared in the file.&nbsp; At rendering time, it is 
+assumed that the color of the appropriate texture pixel will modulate the color 
+computed by the lighting equation.&nbsp; If no texture is to be associated with 
+the material, then a value of <I>-1</I> must be&nbsp; indicated. 
+<P>The final parameter is a string delimited by exclaimation marks.&nbsp; The 
+string must not contain any control characters, or unpredicatable behaviour 
+could occur.&nbsp; This field is provided for the users to assign material 
+properties not defined by this file format.&nbsp; For instance, the numeric 
+constants describing a Perlin Noise 3D solid texture could be put in this field 
+to instruct the rendered to how to texture shapes which are drawn with this 
+material.&nbsp; If no unsupported parameters are required, empty exclamation 
+marks must conclude the material declaration as follows: !! 
+<P><B>#ray_file_num&nbsp; n</B> 
+<P>The total number of .ray files used in the scene is given by this command. 
+The command must appear before any <I>ray_file</I> definition. This declration 
+must appear before any <I>Group</I> or <I>Shape</I> directives. 
+<P><B>#ray_file&nbsp; fileName</B> 
+<P>Each ray_file used in the scene is declared by the <I>ray_file</I> directive. 
+The first ray_file declared will take the identifier <I>0</I>, and subsequent 
+ray_files will follow in order (i.e. <I>1,2,3</I>, ...). This integer handle is 
+used in scene-graph definitions to indicate that the scene-graph specified by 
+the file should occur as a node to the current scene-graph. This declaration 
+must appear before any <I>Group</I> or <I>Shape</I> directives. 
+<P><B>#group_begin</B> <BR><B>&nbsp;&nbsp;&nbsp; m11 m21 m31 m41</B> 
+<BR><B>&nbsp;&nbsp;&nbsp; m12 m22 m32 m42</B> <BR><B>&nbsp;&nbsp;&nbsp; m13 m23 
+m33 m43</B> <BR><B>&nbsp;&nbsp;&nbsp; m14 m24 m34 m44</B> <BR><B>#group_end</B> 
+<P>This pair of directives defines a node that will be added to the current 
+scene-graph with the specified transformation context. All objects within the 
+<I>group_begin</I> .. and associated <I>group_end</I> directive are subject to 
+the 4x4 transformation matrix given in the <I>group_begin</I> declaration.&nbsp; 
+Groups may be nested, permitting the specification of a transformation 
+heirarchy.&nbsp; Shapes within nested groups are subject, in order, to the 
+transformation contexts of all their enclosing groups.&nbsp; The total 
+transformation context of a given shape is determined, then, by starting with 
+the matrix of the root enclosing group, and concatenating additional matrices on 
+the right as we decend into nested groups, until we reach the shape.&nbsp; The 
+transformation context of a group is applicable only to its shapes and sub 
+groups, so we must remove matrices from the right as we ascend back up the 
+heirarchy. 
+<P>The matrix elements appear as follows and are intended to operate on column 
+vectors: 
+<P><TT>|m11 m21 m31 m41|</TT> <BR><TT>|m12 m22 m32 m42|</TT> <BR><TT>|m13 m23 
+m33 m43|</TT> <BR><TT>|m14 m24 m34 m44|</TT> 
+<P>Note: When the .ray file is initially parsed the root scene-graph node is 
+instantiated with the identity matrix, so that <I>Shape</I>s specified outside 
+any <I>Group</I> directives are still valid. 
+<P><B>#shape_* m ...</B> 
+<P>All shapes that can be defined are prefixed by <I>shape_</I> and take a 
+common first parameter <I>m</I> which indicates the integer handle of the 
+material to use when rendering the object.&nbsp; Subsequent descriptions of the 
+supported shapes will omit explanations of the <I>m</I> parameter... <BR>&nbsp; 
+<P><B>#shape_sphere&nbsp; m</B> <BR><B>&nbsp;&nbsp;&nbsp; cx cy cz</B> 
+<BR><B>&nbsp;&nbsp;&nbsp; r</B> 
+<P>This defines a sphere, situated at the point (<I>cx,cy,cz</I>) with a radius 
+given by <I>r</I>. 
+<P><B>#shape_box&nbsp; m</B> <BR><B>&nbsp;&nbsp;&nbsp; cx cy cz</B> 
+<BR><B>&nbsp;&nbsp;&nbsp; lx ly lz</B> 
+<P>This defines an axis aligned box, centered at the point 
+(<I>cx,cy,c</I>z).&nbsp;&nbsp; The length of the <I>x</I>,<I> y</I>, and 
+<I>z</I> axis aligned sides is given by <I>lx, ly, </I>and<I> lz,</I> 
+respectively. The box extends from <I>x=cx-lx/2</I> to <I>x=cx+lx/2</I>, 
+<I>y=cy-ly/2</I> to <I>y=cy+ly/2</I>, and <I>z=cz-lz/2</I> to <I>z=cz+lz/2</I>. 
+<P><B>#shape_cylinder m</B> <BR><B>&nbsp;&nbsp;&nbsp; cx cy cz</B> 
+<BR><B>&nbsp;&nbsp;&nbsp; r h</B> 
+<P>This defines a cylinder, with a central axis parallel to the y-axis, and 
+centered at the point (<I>cx,cy,cz</I>).&nbsp; The radius and height are given 
+by <I>r</I> and <I>h</I>, respectively.&nbsp; The cylinder is a closed surface 
+(i.e. it has end caps.)&nbsp; The ends lie at y=cy-h/2 and y=cy+h/2. 
+<P><B>#shape_cone&nbsp; m</B> <BR><B>&nbsp;&nbsp;&nbsp; cx cy cz</B> 
+<BR><B>&nbsp;&nbsp;&nbsp; r h</B> 
+<P>This defines a cone, with a central axis parallel to the y-axis, and centered 
+at the point (<I>cx,cy,cz</I>).&nbsp; The radius and height are given by 
+<I>r</I> and <I>h</I>, respectively.&nbsp; The cone is a closed surface (i.e. 
+it's base is capped) The base and apex of the cone lie at <I>y=cy-h/2</I> and 
+<I>y=cy+h/2</I>, respectively. 
+<P><B>#shape_triangle&nbsp; m</B> <BR><B>&nbsp;&nbsp;&nbsp; i1 i2 i3</B> 
+<BR>This defines a triangle with vertices indexed by <I>i1</I>, <I>i2</I>, and 
+<I>i3</I>. 
+<P><B>#ray_file_instance&nbsp; n</B> 
+<P>This specifies the index of the scene-graph, that is to be added as a node to 
+the current scene-graph. </P></BODY></HTML>

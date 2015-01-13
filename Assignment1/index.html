@@ -1,0 +1,378 @@
+<html><head><title>CS 4810: Introduction to Computer Graphics</title></head><body bgcolor="#ffffff">
+
+<table border="0" cellpadding="5" cellspacing="0" width="100%">
+<tr>
+  <td align="left" valign="middle">
+    <h2>
+    CS 4810: Introduction to Computer Graphics <br>
+    Spring 2015 <br>
+    </h2>
+  </td>
+</tr>
+</table>
+
+<br>
+
+<a href="../index.html">Home</a> |
+<a href="../schedule.html">Schedule</a> |
+<a href="../assignments.html">Assignments</a>
+<hr noshade color="#000000">
+
+<h2>Programming Assignment 1: Image Processing</h2>
+
+<b>Due Thursday, 2/5 at 11:55PM</b>
+
+<!--
+<H3>Announcements</H3>
+<UL>
+<LI>There seems to be a certain amount of confusion with regards to how the <CODE>Image::AddRandomNoise</CODE>
+method should be implemented. The parameter input to this method represents the fraction of noise that should
+be added to each color channel of each pixel and should be a value in the range [0.0,1.0]. So for example, if
+the value is 0.0, then no noise should be added to the pixels. If the value is 0.5 then each color channel of each
+pixel should have a random value in the range [-128,128] added to it. (This means that the amount of random noise
+you add to a pixel should be independent of the pixel color.) Don't forget to clamp the color value so that the final
+value is in the range [0,255].
+<LI> When implementing the image rotation, remember that the cosine and sine functions take in
+parameters that represent an angle in radians, not degrees.
+<LI>For those of you who are compiling with Microsoft Visual C++, if you are running a version
+that is more recent than 6.0, you may run into an error of the form: <CODE>cannot open 
+file 'odcb32.lib'</CODE>. You can resolve this problem by right clicking on the project
+in the Solution Explorer, selecting <CODE>properties</CODE> and removing odbc32.lib and
+odbccp32.lib from the <CODE>Linker / Input / Additional Dependencies</CODE> field.
+These libraries are not needed for this assignment.
+<LI> Many of the methods in the <CODE>Image</CODE> class specify that they return an integer.
+If the method has successfully done what it should do, a value of 1 is returned. Otherwise a
+value of 0 is returned. In the skeleton code, the methods have not been implemented, so a
+0 value is returned. As you implement the methods, you should make them return a value of 1.
+<LI>In order to implement the <CODE>Image::RandomDither</CODE> method, you will need to add
+random noise to each color channel of each pixel and then clamp to the appropriate quanitzation
+level. The amount of noise that you should add depends on the number of bits your are using
+for quantization and should be just enough to push a color from its <CODE>Floor</CODE> to its
+<CODE>Ceiling</CODE>. Specifically, given a number of bits for quantization, each quantization level
+corresponds to a range of values where the size of the range is <CODE>R=256/2**bits</CODE> so the
+noise that you add should be a random number in the range [<CODE>-R/2</CODE>,<CODE>R/2</CODE>].
+For example, if you have only 4 bits to represent the colors in the range
+[0,255], each quanitzation level corresponds to a range of 16 values, and the noise that you add
+should be a random number in the range [-8,8].
+<LI> In the <CODE>Image::Blur</CODE> method, convolving with a low-pass Gaussian filter means using a
+filter (mask) whose entries are defined by a Gaussian with large variance. (The values should fall
+off slowly as entries move away from the center.) If you are having trouble with this, look over the notes from
+the first lecture on image processing to see how the width/variance of the Gaussian is related to the size of
+the mask.)
+
+</UL>
+-->
+<HR>
+
+<P></P>
+<H3>Overview</H3>
+<BLOCKQUOTE>In this assignment you will create a simple image processing 
+  program, a pared-down version of Adobe Photoshop or The Gimp. The operations 
+  that you implement will be mostly filters which take in an input image, 
+  process the image, and produce an output image.
+<P>
+The code skeleton can be downloaded <A href="Assignment1.zip">here</A>.
+
+<P>
+An overview of the code you will be using can be found <A href="Documentation/index.html">here</A>.
+<p>
+Some test images can be found <A HREF="Data">here</A>.
+<P>
+Examples of what some of the results should look like can be found <A HREF="Results">here</A>.
+</BLOCKQUOTE>
+<HR>
+
+<H3>Getting Started</H3>
+
+<BLOCKQUOTE>
+You should use the code skeleton as a starting point for your assignment. We provide you with several files, but you should
+only have to change <CODE>image.todo.cpp</CODE> and <CODE>lineSegments.todo.cpp</CODE>. 
+<UL>
+  <LI><CODE>main.cpp</CODE>: Parses the command line arguments, and calls the appropriate image functions.
+  <LI><CODE>Util/cmdLineParser.[cpp/h]</CODE>: Code for processing the command line arguments.
+  <LI><CODE>JPEG/*.[cpp/h]</CODE>: Functions for the back end of jpeg file reading and writing. You won't need to
+  modify these, but you will have to compile them into a library to support reading and writing
+  files in this format.
+  <LI><CODE>Image/bmp.[cpp/h]</CODE>: Functions to read and write Windows 24-bit BMP files.
+  <LI><CODE>Image/jpeg.[cpp/h]</CODE>: Functions to read and write jpeg images.
+  <LI><CODE>Image/image.[cpp/h]</CODE>: Image processing code.
+  <LI><CODE>Image/lineSegments.[cpp/h]</CODE>: Line segment processing code.
+  <LI><CODE>Image/image.todo.cpp</CODE>: Code stubs for image processing that you will need to implement.</LI>
+
+  <LI><CODE>Image/lineSegments.todo.cpp</CODE>: Code stubs for line segment processing that you will need to implement.</LI>
+  <LI><CODE>assignment1.dsw</CODE>: Workspace file suitable for Visual C++ on Windows 2000 platform. </LI>
+  <LI><CODE>JPEG/Makefile</CODE>: The makefile for compiling the <CODE>JPEG</CODE> library under Unix. </LI>
+  <LI><CODE>Makefile</CODE>: The makefile for compiling the <CODE>assignment1</CODE> executable under Unix (use 'gmake' to build!!). </LI>
+
+</UL>
+  <!--
+  <P>You can find test images at <A href="http://www.cs.mcgill.ca/~cs557/assn1/images/">here</A> . 
+  -->
+  <P>After you copy the provided files to your directory, the first thing to do is compile the program.
+  To do this, you will first have to compile the <CODE>JPEG</CODE> library and then compile the
+  <CODE>assignment1</CODE> executable. 
+  <BLOCKQUOTE>
+  <B>On a Windows Machine</B><br>
+  Begin by opening <CODE>Assignment1.sln</CODE> using Microsoft Visual Studio.
+  <UL>
+
+    <LI> Build <CODE>Assignment1.exe</CODE> by selecting <CODE>Build -> Build Solution</CODE> or <CODE>Ctrl + Shift + B</CODE>. (If it has not been compiled yet, this will also compile the <CODE>JPEG</CODE> library.)
+  </UL>
+  </BLOCKQUOTE>
+  <BLOCKQUOTE>
+  <B>On a Unix Machine</B><BR>
+
+  <UL>
+    <LI> Type <CODE>make</CODE> to compile the <CODE>Assignment1</CODE> executable. (If it has not been compiled
+    yet, this will also compile the <CODE>JPEG</CODE> library.)
+  </UL>
+  </BLOCKQUOTE>
+
+</BLOCKQUOTE>
+<HR>
+
+<H3>How the Program Works</H3>
+<BLOCKQUOTE>
+The user interface for this assignment was kept to the simplest possible, so you can concentrate on the image
+processing issues. The program runs on the command line. It reads an image from a specified file, processes the
+image using the filter specified by the command line arguments, and writes the resulting image to the specified
+file.<BR>
+The command line parser is set up to read the arguments from the command line that are specified in the following
+format: First the parameter name is specified by pre-pending with <B>two</B> hyphens, and then the parameter values
+are enumerated. (Note that the number of arguments associated to each parameter are fixed in <CODE>main.cpp</CODE>
+and the order in which the parameters are specified is ignored.)<BR>
+For example, to increase the brightness of the image <CODE>in.bmp</CODE> by 10%, and save the result in the image
+
+<CODE>out.bmp</CODE>, you would type:
+<BLOCKQUOTE><CODE>% Assignment1 --brighten 1.1 --in in.bmp --out out.bmp</CODE></BLOCKQUOTE>
+To see the full list of possible arguments, you can simply type:
+<BLOCKQUOTE><CODE>% Assignment1</CODE></BLOCKQUOTE>
+This gives you a list of all the possible parameter names and the number and meaning of the associated parameter
+values. Bracketed parameters are optional (an input image file and an output image file need to be specified).<BR>
+Note that since the order in which parameters are specified is ignored, if you want to apply two filters to a single
+image you can specify parameters for both filters, but you cannot control the order in which the filters are applied.
+For some filters, the order in which the filters are applied does not affect the output image while for others, the
+output image may depend on the order. (For the latter case, you can control the ordering by applying one filter,
+writing the output to a temporary image, and then applying the second filter to the temporary image.)<BR>
+The current <CODE>main.cpp</CODE> decides if the specified image file is Windows BMP file or a JPEG file based on the
+file extension.
+</BLOCKQUOTE>
+<HR>
+
+<H3>What You Have to Do</H3>
+<BLOCKQUOTE>The assignment is worth 30 points. The following is a list of 
+  features that you may implement (listed roughly from easiest to hardest). The 
+  number in front of the feature corresponds to how many points the feature is 
+  worth.
+  <UL>
+    <LI>(1)
+    <A HREF="Documentation/class_image32.html#a10">Image32::AddRandomNoise</A> (<CODE>image.todo.cpp</CODE>):<BR>
+    Add random noise to an image.
+
+    <LI>(1)
+    <A HREF="Documentation/class_image32.html#a11">Image32::Brighten</A> (<CODE>image.todo.cpp</CODE>):<BR>
+
+    Individually scale the RGB channels of an image.
+
+    <LI>(1)
+    <A HREF="Documentation/class_image32.html#a12">Image32::Luminance</A> (<CODE>image.todo.cpp</CODE>):<BR>
+    Change a color image into a luminance (grayscale) image.
+
+    <LI>(1)
+    <A HREF="Documentation/class_image32.html#a13">Image32::Contrast</A> (<CODE>image.todo.cpp</CODE>):<BR>
+
+    Change the contrast of an image. (See <A href="http://www.graficaobscura.com/interp/index.html">Graphica Obscura</A>.)
+
+    <LI>(1)
+    <A HREF="Documentation/class_image32.html#a14">Image32::Saturate</A> (<CODE>image.todo.cpp</CODE>):<BR>
+    Change the saturation of an image. (See <A href="http://www.graficaobscura.com/interp/index.html">Graphica Obscura</A>.)
+
+    <LI>(1)
+    <A HREF="Documentation/class_image32.html#a29">Image32::Crop</A> (<CODE>image.todo.cpp</CODE>):<BR>
+
+    Extract a subimage specified by two corners <CODE>(x1,y1)</CODE> and <CODE>(x2,y2)</CODE>.
+
+    <LI>(2)
+    <A HREF="Documentation/class_image32.html#a15">Image32::Quantize</A> (<CODE>image.todo.cpp</CODE>):<BR>
+    Change the number of bits per channel of an image, using simple rounding. 
+
+    <LI>(2)
+    <A HREF="Documentation/class_image32.html#a16">Image32::RandomDither</A> (<CODE>image.todo.cpp</CODE>):<BR>
+
+    Convert an image to a given number of bits per channel, using a random threshold. 
+
+    <LI>(2)
+    <A HREF="Documentation/class_image32.html#a17">Image32::OrderedDither2x2</A> (<CODE>image.todo.cpp</CODE>):<BR>
+    Convert an image to a given number of bits per channel, using a 2x2 ordered dithering matrix. 
+
+    <LI>(2)
+    <A HREF="Documentation/class_image32.html#a18">Image32::FloydSteinbergDither</A> (<CODE>image.todo.cpp</CODE>):<BR>
+
+    Convert an image to a given number of bits per channel, using dithering with error diffusion. 
+
+    <LI>(2)
+    <A HREF="Documentation/class_image32.html#a19">Image32::Blur3x3</A> (<CODE>image.todo.cpp</CODE>):<BR>
+    Blur an image by using a 3x3 mask of weights as a filter. 
+
+    <LI>(2)
+    <A HREF="Documentation/class_image32.html#a20">Image32::EdgeDetect3x3</A> (<CODE>image.todo.cpp</CODE>):<BR>
+
+    Detect edges in an image by using a 3x3 mask of weights as a filter.
+
+
+    <LI>(1)
+    <A HREF="Documentation/class_image32.html#a32">Image32::NearestSample</A> (<CODE>image.todo.cpp</CODE>):<BR>
+    Return the value of the pixel closest to the position <CODE>(x,y)</CODE>.
+
+    <LI>(1)
+    <A HREF="Documentation/class_image32.html#a33">Image32::BilinearSample</A> (<CODE>image.todo.cpp</CODE>):<BR>
+
+    Return the value of the pixel obtained by interpolating the values of the four pixels closest to
+    the position <CODE>(x,y)</CODE>.
+
+    <LI>(1)
+    <A HREF="Documentation/class_image32.html#a34">Image32::GaussianSample</A> (<CODE>image.todo.cpp</CODE>):<BR>
+    Return the value of the pixel obtained by computing the weighted average of all pixels whose distance is less
+    than <CODE>radius</CODE> from the sample point <CODE>(x,y)</CODE> using Gaussian weighting where the variance of
+    the Gaussian is specified by <CODE>variance</CODE>
+
+
+
+    <LI>(1)
+    <A HREF="Documentation/class_image32.html#a21">Image32::ScaleNearest</A> (<CODE>image.todo.cpp</CODE>):<BR>
+    Scale an image up or down by a real valued factor using nearest pixel sampling.
+
+    <LI>(1)
+    <A HREF="Documentation/class_image32.html#a22">Image32::ScaleBilinear</A> (<CODE>image.todo.cpp</CODE>):<BR>
+
+    Scale an image up or down by a real valued factor using bilinear interpolation.
+
+    <LI>(1)
+    <A HREF="Documentation/class_image32.html#a23">Image32::ScaleGaussian</A> (<CODE>image.todo.cpp</CODE>):<BR>
+    Scale an image up or down by a real valued factor using Gaussian sampling. (Make sure to choose the variance
+    of the Gaussian and the radius of weighting so that they correspond to the scale factor in a meaningful way.)
+
+    <LI>(2)
+    <A HREF="Documentation/class_image32.html#a24">Image32::RotateNearest</A> (<CODE>image.todo.cpp</CODE>):<BR>
+
+    Rotate an image by a given angle about the center pixel using nearest pixel sampling.<BR>
+    Note: You may have to resize the image as the dimensions of the output image need not be the same
+    as the dimensions of the input image.
+
+    <LI>(2)
+    <A HREF="Documentation/class_image32.html#a25">Image32::RotateBilinear</A> (<CODE>image.todo.cpp</CODE>):<BR>
+    Rotate an image by a given angle about the center pixel using bilinear interpolation.<BR>
+
+    <LI>(2)
+    <A HREF="Documentation/class_image32.html#a26">Image32::RotateGaussian</A> (<CODE>image.todo.cpp</CODE>):<BR>
+
+    Rotate an image by a given angle about the center pixel using Gaussian sampling.<BR>
+
+    <LI>(1)
+    <A HREF="Documentation/class_image32.html#a27">Image32::SetAlpha</A> and 
+    <A HREF="Documentation/class_image32.html#a28">Image32::Composite</A> (<CODE>image.todo.cpp</CODE>):<BR>
+    Compose two images by overlaying the target image over the source.<BR>
+
+    <B>Note</B>: In practice, Windows BMP files and JPEG files only specify 3-channel, RGB (no alpha), images. Thus,
+    in order to generate an image with an alpha-channel, composition is performed by calling something akin to:
+    <BLOCKQUOTE>%assignment1 --in source.bmp --composite overlay.bmp matte.bmp --out out.bmp</BLOCKQUOTE>
+    Then, in <CODE>main.cpp</CODE>, the method <CODE>Image32::SetAlpha</CODE></U>
+    is called to set the alpha-channel of the image <CODE>overlay.bmp</CODE> using
+    the image <CODE>matte.bmp</CODE>. This generates a 4-channel, RGBA, image that is passed along to
+    <CODE>Image::Composite</CODE> for compositing.
+
+    <LI>(1) Create a composite image of yourself and a famous person. 
+
+
+    <LI>(2)
+    <A HREF="Documentation/class_image32.html#a30">Image32::FunFilter</A> (<CODE>image.todo.cpp</CODE>):<BR>
+
+    Warp an image using a non-linear mapping of your choice (examples are fisheye, sine, bulge, swirl). 
+
+    <LI>(6) <B>Beier-Neely Morphing</B>:<BR>
+    Morph two images using the method in Beier Neely's 
+    <A href="../Readings/beier92.pdf">Feature-based Image Metamorphosis</A>.<BR>
+    <A HREF="BNMorph.html">See this page</A> for more information about the command line, input options, and some
+    test cases. <BR>
+    To make your life easier, the <CODE>Image32::BeierNeelyMorph</CODE> function already has a body which interpolates
+    the line segments, calls the warping function <CODE>Image32::Warp</CODE> and then cross-dissolves the resultant
+    images by calling <CODE>Image32::CrossDissolve</CODE>.<BR>
+
+    The <CODE>Image::Warp</CODE> function calls <CODE>OrientedLineSegmentPairs::getSourcePosition</CODE> which determines
+    the position of the source pixel given the position of the target.<BR>
+    In order to get this function to actually return the desired image, you will need to implement the following methods:
+
+    <UL>
+
+        <LI><A HREF="Documentation/class_oriented_line_segment.html#a3">OrientedLineSegment::length</A> (<CODE>lineSegments.todo.cpp</CODE>):<BR>
+
+	This method returns the length of the line segment.
+
+        <LI><A HREF="Documentation/class_oriented_line_segment.html#a4">OrientedLineSegment::distance</A> (<CODE>lineSegments.todo.cpp</CODE>):<BR>
+	This method returns the shortest distance from the point <CODE>(x,y)</CODE> to the line segment.
+
+        <LI><A HREF="Documentation/class_oriented_line_segment.html#a5">OrientedLineSegment::getPerpendicular</A> (<CODE>lineSegments.todo.cpp</CODE>):<BR>
+
+	This method writes the coordinates of the unit-vector perpendicular to the direction of the line segment.<BR>
+	Note: When implementing this method, be sure to choose the orientation of the perpendicular vector consistently.
+
+        <LI><A HREF="Documentation/class_oriented_line_segment.html#e1">OrientedLineSegment::GetSourcePosition</A> (<CODE>lineSegments.todo.cpp</CODE>):<BR>
+	This method uses a single pair of source and target line segments to define the position of the source pixel, given the position
+	of the target pixel. (To change the way in which the blending occurs, you will want to change the default values of the parameters
+	<CODE>OrientedLineSegment::A</CODE>, <CODE>OrientedLineSegment::B</CODE>, and <CODE>OrientedLineSegment::P</CODE>.)
+
+        <LI><A HREF="Documentation/class_image32.html#a31">Image32::Warp</A> (<CODE>image.todo.cpp</CODE>):<BR>
+
+	This method uses a set of oriented line segment pairs to warp the current image. In order to implement this method
+	you will most likely want to call <CODE>OrientedLineSegmentPairs::getSourcePosition</CODE> which returns the
+	position of the source pixel you want to sample at in order to compute the color value at the target. (Assuming
+	that you have implemented <CODE>OrientedLineSegment::GetSourcePosition</CODE>, the
+	<CODE>OrientedLineSegmentPairs::getSourcePosition</CODE> method should not need any implementation.)
+
+        <LI><A HREF="Documentation/class_image32.html#e1">Image32::CrossDissolve</A> (<CODE>image.todo.cpp</CODE>):<BR>
+	This static method takes in two images and a cross-disolving value in the range [0,1], and generates the specified blend
+	of the two images.
+
+    </UL>
+
+</UL>
+The assignment will be graded out of <B>30 points</B>. In addition to implementing these features, there are several other ways to get more points:
+<UL>
+    <LI>(1) Submitting one or more images for the art contests.
+    <LI>(1) Submitting a <CODE>.mpeg</CODE> or <CODE>.gif</CODE> movie animating 
+    the results of one or more filters with continuously varying parameters.
+    You can generate such a video by outputting the results of your filter in JPEG format and
+    then using an executable such as <a href="https://www.ffmpeg.org/">FFmpeg</a> or <A HREF="http://www.ndrw.co.uk/">JPGAvi</A> which stitches
+    together a collection of JPEG files into a single movie. Alternatively, if you are a Linux user,
+    you can use the <CODE>mpeg_encode</CODE> command or The Gimp to produce an animated gif for your results.
+    <LI>(2) winning the regular art contest, 
+
+</UL> For images or movies that you submit, you also have to submit
+the sequence of commands used to created them, otherwise they will not
+be considered valid.  <P> It is possible to get more than 30
+points. However, after 30 points, each point is divided by 2, and
+after 32 points, each point is divided by 4. If your raw score is 29,
+your final score will be 29. If the raw score is 33, you'll get
+31.25. For a raw score of 36, you'll get 32.</P> </BLOCKQUOTE> <HR>
+
+<H3>What to Submit</H3>
+<BLOCKQUOTE>
+Submission intstructions are specified <A HREF="../assignments.html#submitting">here</A>.<br>
+Please include the following in your submission: 
+  <UL>
+
+    <LI>the complete source code; 
+    <LI>the <CODE>.bmp</CODE> images (source and dest) for the image processing features (you can alternatively submit .png or .jpg files);
+    <LI>the <CODE>.bmp</CODE> images (source, overlay, and matte) for the compositing feature (you can alternatively submit .png or .jpg files);
+    <LI>the line files for the morph feature and 10 <CODE>.jpeg</CODE> images showing the morph
+    between two images at 10 different time-steps (optional);
+    <LI>the <CODE>.mpeg</CODE> movie or animated .gif for the movie feature (optional); 
+    <LI>the images for the art contest (optional); and 
+    <LI>a writeup.
+  </UL>
+
+</BLOCKQUOTE>
+<HR>
+
+</body>
+</html>

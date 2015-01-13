@@ -1,0 +1,223 @@
+<html><head><title>Assignment 1: Sample Results</title></head><body>
+<center>
+<h3>Sample results for Assignment 1: Image Processing</h3></center>
+<p align="left">This page is designed to give you a sense of what your images 
+should look like and to help you test your results as you go along.</p>
+<hr>
+<ul>
+<li><b>Noise</b>: 
+<table border="1">
+<tbody><tr>
+<td><img src="results_files/yoda_003.jpg" width="200"></td>
+<td><img src="results_files/yoda_007.jpg" width="200"></td>
+<td><img src="results_files/yoda_004.jpg" width="200"></td>
+</tr>
+<tr>
+<td align="center"><code>--noisify 0</code></td>
+<td align="center"><code>--noisify .1</code></td>
+<td align="center"><code>--noisify .5</code></td>
+</tr>
+</tbody></table>
+</li>
+
+<li><b>Brightness</b>: 
+<table border="1">
+<tbody><tr>
+<td><img src="results_files/yoda_005.jpg" width="200"></td>
+<td><img src="results_files/yoda.jpg" width="200"></td>
+<td><img src="results_files/yoda_006.jpg" width="200"></td>
+</tr>
+<tr>
+<td align="center"><code>--brighten .5</code></td>
+<td align="center"><code>--brighten 1</code></td>
+<td align="center"><code>--brighten 2</code></td>
+</tr>
+</tbody></table>
+</li>
+
+<li><b>Luminance</b>: 
+<table border="1">
+<tbody><tr>
+<td><img src="results_files/yoda_002.jpg" width="200"></td>
+</tr>
+<tr>
+<td align="center"><code>--gray</code></td>
+</tr>
+</tbody></table>
+</li>
+
+<li><b>Contrast</b>: 
+<table border="1">
+<tbody><tr>
+<td><img src="results_files/shrek_004.jpg" width="300"></td>
+<td><img src="results_files/shrek_006.jpg" width="300"></td>
+<td><img src="results_files/shrek_002.jpg" width="300"></td>
+</tr>
+<tr>
+<td align="center"><code>--contrast .5</code></td>
+<td align="center"><code>--contrast 1</code></td>
+<td align="center"><code>--contrast 2</code></td>
+</tr>
+</tbody></table>
+</li>
+
+<li><b>Saturataion</b>: 
+<table border="1">
+<tbody><tr>
+<td><img src="results_files/shrek.jpg" width="300"></td>
+<td><img src="results_files/shrek_005.jpg" width="300"></td>
+<td><img src="results_files/shrek_003.jpg" width="300"></td>
+</tr>
+<tr>
+<td align="center"><code>--saturate .5</code></td>
+<td align="center"><code>--saturate 1</code></td>
+<td align="center"><code>--saturate 2</code></td>
+</tr>
+</tbody></table>
+</li>
+
+<li><b>Quantization</b>: 
+<table border="1">
+<tbody><tr>
+<td><img src="results_files/ramp_004.jpg" width="255"></td>
+<td><img src="results_files/ramp_007.jpg" width="255"></td>
+<td><img src="results_files/ramp_003.jpg" width="255"></td>
+</tr>
+<tr>
+<td align="center"><code>--quantize 1</code></td>
+<td align="center"><code>--quantize 2</code></td>
+<td align="center"><code>--quantize 4</code></td>
+</tr>
+</tbody></table>
+</li>
+
+<li><b>Random Dither</b>: 
+<table border="1">
+<tbody><tr>
+<td><img src="results_files/ramp_006.jpg" width="255"></td>
+<td><img src="results_files/ramp.jpg" width="255"></td>
+<td><img src="results_files/ramp_011.jpg" width="255"></td>
+</tr>
+<tr>
+<td align="center"><code>--rDither 1</code></td>
+<td align="center"><code>--rDither 2</code></td>
+<td align="center"><code>--rDither 4</code></td>
+</tr>
+</tbody></table>
+</li>
+
+<li><b>Ordered Dither</b>: 
+<table border="1">
+<tbody><tr>
+<td><img src="results_files/ramp_009.jpg" width="255"></td>
+<td><img src="results_files/ramp_008.jpg" width="255"></td>
+<td><img src="results_files/ramp_010.jpg" width="255"></td>
+</tr>
+<tr>
+<td align="center"><code>--oDither2x2 1</code></td>
+<td align="center"><code>--oDither2x2 2</code></td>
+<td align="center"><code>--oDither2x2 4</code></td>
+</tr>
+</tbody></table>
+</li>
+
+<li><b>Floyd-Steinberg Dither</b>: 
+<table border="1">
+<tbody><tr>
+<td><img src="results_files/ramp_012.jpg" width="255"></td>
+<td><img src="results_files/ramp_005.jpg" width="255"></td>
+<td><img src="results_files/ramp_002.jpg" width="255"></td>
+</tr>
+<tr>
+<td align="center"><code>--fsDither 1</code></td>
+<td align="center"><code>--fsDither 2</code></td>
+<td align="center"><code>--fsDither 4</code></td>
+</tr>
+</tbody></table>
+</li>
+
+<li><b>Blurring</b>: 
+<table border="1">
+<tbody><tr>
+<td><img src="results_files/sully_002.jpg" width="295"></td>
+</tr>
+<tr>
+<td align="center"><code>--edges3x3</code></td>
+</tr>
+</tbody></table>
+</li>
+
+<li><b>Edge Detection</b>: 
+<table border="1">
+<tbody><tr>
+<td><img src="results_files/sully.jpg" width="295"></td>
+</tr>
+<tr>
+<td align="center"><code>--edges3x3</code></td>
+</tr>
+</tbody></table>
+</li>
+
+<li><b>Scaling (Nearest Sample)</b>: 
+<table border="1">
+<tbody><tr>
+<td><img src="results_files/stripe_012.jpg" width="140"></td>
+<td><img src="results_files/stripe_007.jpg" width="200"></td>
+<td><img src="results_files/stripe_003.jpg" width="260"></td>
+</tr>
+<tr>
+<td align="center"><code>--scaleNearest .7</code></td>
+<td align="center"><code>--scaleNearest 1</code></td>
+<td align="center"><code>--scaleNearest 1.3</code></td>
+</tr>
+</tbody></table>
+</li>
+
+<li><b>Scaling (Bilinear Sample)</b>: 
+<table border="1">
+<tbody><tr>
+<td><img src="results_files/stripe_005.jpg" width="140"></td>
+<td><img src="results_files/stripe_011.jpg" width="200"></td>
+<td><img src="results_files/stripe.jpg" width="260"></td>
+</tr>
+<tr>
+<td align="center"><code>--scaleBilinear .7</code></td>
+<td align="center"><code>--scaleBilinear 1</code></td>
+<td align="center"><code>--scaleBilinear 1.3</code></td>
+</tr>
+</tbody></table>
+</li>
+
+<li><b>Scaling (Gaussian Sample)</b>: 
+<table border="1">
+<tbody><tr>
+<td><img src="results_files/stripe_002.jpg" width="140"></td>
+<td><img src="results_files/stripe_006.jpg" width="200"></td>
+<td><img src="results_files/stripe_004.jpg" width="260"></td>
+</tr>
+<tr>
+<td align="center"><code>--scaleGaussian .7</code></td>
+<td align="center"><code>--scaleGaussian 1</code></td>
+<td align="center"><code>--scaleGaussian 1.3</code></td>
+</tr>
+</tbody></table>
+</li>
+
+<li><b>Rotation</b>: 
+<table border="1">
+<tbody><tr>
+<td><img src="results_files/stripe_010.jpg" width="274"></td>
+<td><img src="results_files/stripe_009.jpg" width="274"></td>
+<td><img src="results_files/stripe_008.jpg" width="274"></td>
+</tr>
+<tr>
+<td align="center"><code>--rotateNearest 30</code></td>
+<td align="center"><code>--rotateBilinear 30</code></td>
+<td align="center"><code>--rotateGaussian 30</code></td>
+</tr>
+</tbody></table>
+</li>
+
+
+</ul>
+</body></html>

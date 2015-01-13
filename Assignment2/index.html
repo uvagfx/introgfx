@@ -1,0 +1,534 @@
+<html><head><title>CS 4810: Introduction to Computer Graphics</title></head><body bgcolor="#ffffff">
+
+<table border="0" cellpadding="5" cellspacing="0" width="100%">
+<tr>
+  <td align="left" valign="middle">
+    <h2>
+    CS 4810: Introduction to Computer Graphics <br>
+    Spring 2015 <br>
+    </h2>
+  </td>
+</tr>
+</table>
+
+<br>
+
+<a href="../index.html">Home</a> |
+<a href="../schedule.html">Schedule</a> |
+<a href="../assignments.html">Assignments</a>
+<hr noshade color="#000000">
+
+<h2>Programming Assignment 2: Ray Tracer</h2>
+
+<b>Due Thursday, 3/19 at 11:55PM</b>
+
+<HR>
+<h3>Overview</h3>
+<blockquote>
+<p>
+In this assignment you will implement a basic ray tracer. To allow you to focus 
+on the nuts and bolts of the actual ray tracing, you are provided with a host 
+of data structures for managing the ray traced objects, linear algebra 
+functions (vector and matrix objects and operations), a function for loading 
+scene graph files into a prescribed node tree stucture, BMP and JPEG image file 
+importers/exporters (for images and textures, etc), and a couple of supporting 
+data structures for lights, materials, etc.
+
+<p>
+<p>An overview of the <b>code</b> you will be using can be found <A href="Documentation/index.html">here</A> or downloaded <A href="Documentation.zip">here</A>.
+<p>An overview of the <code>.ray</code> file <b>syntax</b> can be found <A href="syntax.html">here</A>.
+
+<p>A description of what your ray-tracer should do as you implement the different parts of the assignment
+can be found <A href="progress.html">here</A>.
+
+<p>Skeleton code and project files for several platforms and common IDEs:
+
+<ul>
+<li><a href="Assignment2_VS2008.zip">Windows Visual Studio 2008</a>
+<li><a href="Assignment2_VS2010.zip">Windows Visual Studio 2010</a>
+<li><a href="Assignment2_MACOSX.tar.gz">Mac OS X</a>
+<li><a href="Assignment2_unix.zip">Unix/Linux</a> (use 'gmake' to build!!)
+</ul>
+
+<p><b>Notes on GLUT:</b> This assingment relies on the external library GLUT which is distributed along with the Windows starter code.  Those of you using Unix will need to be sure GLUT is installed on your machine. On most Linux distros the GLUT library is not installed by default, but there are many good (and free) GLUT implementations out there. Here is how you would install <b>freeglut</b> on a Debian system (this includes Ubuntu and other forks): <bold>apt-get install freeglut3 freeglut3-dev</bold>. If you are running Ubuntu, chances are you will probably need to add sudo to run this command as root: <bold>sudo apt-get install freeglut3 freeglut3-dev</bold>. Other package managers such as YaST on SuSE and BSD ports may have different syntax.
+
+For Cygwin, use the Cygwin setup tool to install OpenGL and GLUT libraries.
+
+If you are using your own machine and need to install GLUT I recommend <a href="http://freeglut.sourceforge.net/">freeglut</a>.
+
+<p><b>Notes on Mac OS X:</b> Apple uses a "framework" system for most of their libraries, including OpenGL and GLUT.
+You'll need to use <b>&lang;GLUT/glut.h&rang;</b> instead of <b>&lang;GL/glut.h&rang;</b>.
+Similarly, you need to use a different syntax to link to the OpenGL and GLUT libraries: <b>-framework OpenGL -framework GLUT</b>.
+Finally, note that <b>malloc.h</b> is deprecated on OS X.
+
+<p>P.S. To learn more about how library dependencies and platform-dependent code are managed in real-world applications, take a look at GNU automake and autoconf tools.
+
+<!--
+<p>The basic outline of how this code works is as follows:
+<ul>
+<li>The <b><a href="Documentation/df/d0a/main_8cpp.html#a3">main</a></b> function is invoked. It parses apart
+the command line arguments and makes a call to the <b>RayTrace</b> function. The function returns an image
+which is written out to the specified file.
+<li>When the <b><a href="Documentation/da/d00/ray_8cpp.html">RayTrace</a></b> function is invoked, it iterates
+over the pixels in the view plane, makes a call to <b>GetRay</b> to obtain the ray that emanates from the camera
+position and passes through the pixel, and then it calls <b>GetColor</b> to get the color picked up by the ray.
+<li>The <b><a href="Documentation/da/d00/ray_8cpp.html#a3">GetColor</a></b> sends a ray through the root node of
+the scene graph (<CODE>RayScene::group</CODE>), tests for intersection, and if there is a hit, computes the color
+contribution from the light sources and recursively sends reflective and refractive rays through the scene.
+</ul>
+-->
+</blockquote>
+
+<hr>
+<h3>Getting Started</h3>
+<blockquote>We are providing starter code for this assignment (read above).  There are a number of files, some of which will only need to be modified in future assignments.
+As in assignment 1, code modification should be relegated to the <code>*.todo.cpp</code> files.
+<ul>
+<li>
+<code>main.cpp</code>: Parses the command line arguments and calls the ray-tracer.
+<li>
+
+<code>Util/cmdLineParser.[cpp/h]</code>: Code for processing the command line arguments.
+<li>
+<code>Util/geometry.[cpp/h]</code>: Data structures and methods for a number of geometric objects, including
+points, rays, planes, and bounding boxes.
+<li>
+<code>Util/geometry.todo.cpp</code>: Code stub for bounding box intersection that you will need to implement.
+<li>
+<code>Util/time.[cpp/h]</code>: Code for computing the current time, in milliseconds.
+<li>
+<code>Image/bmp.[cpp/h]</code>: Code for reading and writing BMP images.
+<LI>
+<code>Image/jpeg.[cpp/h]</code>: Code for reading and writing JPEG images.
+
+<LI>
+<code>Image/image.[cpp/h]</code>: Code for image processing.
+<LI>
+<code>Image/lineSegments.[cpp/h]</code>: Code for processing line segments.
+<li>
+<code>Image/image.todo.cpp</code>: Code stubs for image processing in assignment 1.
+<li>
+<code>Image/lineSegments.todo.cpp</code>: Code stubs for line segment processing in assignment 1.
+<li>
+<code>Ray/rayShape.h</code>: Abstract base class that all shapes must implement.
+<ul>
+<li>
+
+<code>Ray/rayGroup.[cpp/h]</code>: <i>RayShape</i> subclasses describing a node in a scene-graph.
+<li>
+<code>Ray/RayFileInstance.[cpp/h]</code>: <i>RayShape</i> subclass that stores an instance of a scene graph specified in a .ray file.
+<li>
+<code>Ray/rayTriangle.[cpp/h]</code>: <i>RayShape</i>subclass describing a triangle.
+
+<li>
+<code>Ray/raySphere.[cpp/h]</code>: <i>RayShape</i> subclass describing a sphere.
+<li>
+<code>Ray/rayCone.[cpp/h]</code>: <i>RayShape</i> subclass describing a cone.
+<li>
+<code>Ray/rayCylinder.[cpp/h]</code>: <i>RayShape</i> subclass describing a cylinder.
+
+<li>
+<code>Ray/rayBox.[cpp/h]</code>: <i>RayShape</i> subclass describing a box.
+</ul>
+<li>
+<code>Ray/rayLight.h</code>: Abstract base class that all lights must implement.
+<ul>
+<li>
+<code>Ray/rayPointLight.[cpp/h]</code>: <i>RayLight</i> subclass describing a point light.
+
+<li>
+<code>Ray/rayDirectionalLight.[cpp/h]</code>: <i>RayLight</i> subclass describing a directional light.
+<li>
+<code>Ray/raySpotLight.[cpp/h]</code>: <i>RayLight</i> subclass describing a spot light.
+</ul>
+<li>
+<code>Ray/rayCamera.[cpp/h]</code>: Class representing a 3D camera.
+<li>
+
+<code>Ray/rayScene.[cpp/h]</code>: Code for the classes that store environmental information, textures,
+materials, rayFiles, etc.
+<li>
+<code>JPEG/*.[cpp/h]</code>: Code responsible for doing the back-end of JPEG file I/O.
+<li>
+<code>main.cpp</code>: This parses apart the command line arguments and invokes the raytracer.
+<code>RayFiles/</code>: Directory containing a variety of .ray files.
+<li>
+<code>Assignment2.sln</code>: Visual C++ solution file for Windows platforms.
+<li>
+<code>Assignment2.vcproj</code>: Visual C++ project file for assignment 2 (Windows platforms).
+<li>
+
+<code>JPEG.vcproj</code>: Visual C++ project file for the JPEG library (Windows platforms).
+<li>
+<code>Makefile</code>: Makefile suitable for UNIX platforms.
+</ul>
+  <P>After you copy the provided files to your directory, the first thing to do is compile the program.
+  To do this, you will first have to compile the <CODE>JPEG</CODE> library and then compile the
+  <CODE>Assignment2</CODE> executable. 
+  <BLOCKQUOTE>
+  <B>On a Windows Machine</B><br>
+
+  Begin by opening <CODE>Assignment2.sln</CODE> using Microsoft Visual Studio.
+  <UL>
+    <LI> Build the <CODE>Assignment2</CODE> executable:<BR>
+    <CODE>Build -> Build Solution</CODE> or <CODE>Ctrl + Shift + B</CODE>. (If it has not been compiled yet, this will
+    also compile the <CODE>JPEG</CODE> library.)
+  </UL>
+
+  </BLOCKQUOTE>
+  <BLOCKQUOTE>
+  <B>On a Unix Machine</B><BR>
+  <UL>
+    <LI> Type <CODE>make</CODE> to compile the <CODE>Assignment2</CODE> executable. (If it has not been compiled
+    yet, this will also compile the <CODE>JPEG</CODE> library.)
+  </UL>
+
+  </BLOCKQUOTE></blockquote>
+
+<hr>
+<h3>How the Program Works</h3>
+<blockquote>The program takes in to mandatory arguments, the input (<code>.ray</code>) .ray file name, the
+output image file name (<code>.bmp</code>/<code>.jpeg</code>/<code>.jpg</code>), the dimensions of the output
+image, the recursion depth, and the cut-off value for early termination. It is invoked from the command line with:
+<blockquote><code>% Assignment2 --in in.ray --out out.bmp --width w --height h --rLimit r --cLimit c</code></blockquote>
+
+Feel free to add new arguments to deal with the new functionalities you are implementing. Just make sure they are
+documented. </blockquote>
+
+<hr>
+<h3>What You Have to Do</h3>
+<blockquote>
+<p>The assignment is worth 30 points. The following is a list of features that you 
+may implement. The number in parentheses corresponds to how many points it is 
+worth.
+<ul>
+<li>
+(1) <A href="Documentation/class_ray_scene.html#e2"><b>RayScene::GetRay</b></A>
+(<code>Ray/rayScene.todo.cpp</code>):<br>
+
+Generate rays from the camera's position through (i,j)-th pixel of a <i>width</i>x<i>height</i> view plane.
+<li>
+(2) <A href="Documentation/class_ray_group.html#a9"><b>RayGroup</b>::<b>intersect</b></A>
+(<code>Ray/rayGroup.todo.cpp</code>):<br>
+Cast rays through scene-graph nodes. For now, ignore the local transformation and bounding volume information,
+and simply compute the intersection properties for the closest intersection within the list of
+
+<b><A HREF="Documentation/class_ray_shape.html">RayShape</A></b>s associated to the
+<b><A href="Documentation/class_ray_group.html">RayGroup</A></b>. (The number of shapes associated to the group
+is stored in <a href="Documentation/class_ray_group.html#o0">RayShape::sNum</A> and the list of shapes is stored
+in <a href="Documentation/class_ray_group.html#o1">RayShape::shapes</A>.)This method  should return return
+<b>-1.0</b> if there is no intersection. Otherwise, it should return the (positive) distance to the intersection.
+If the value <code>mx</code> is bigger than zero, then only look for intersections whose distance is closer than
+<code>mx</code> from the beginning of the ray.
+
+<li>
+(2) <A href="Documentation/class_ray_sphere.html#a3"><b>RaySphere</b>::<b>intersect</b></A>
+(<code>Ray/raySphere.todo.cpp</code>):<br>
+Compute ray intersections with a sphere. (Ignore the texture coordinates for now.)
+<li>
+(2) <A href="Documentation/class_ray_triangle.html#a3"><b>RayTriangle</b>::<b>intersect</b></A>
+
+(<code>Ray/rayTriangle.todo.cpp</code>): <br>
+Compute ray intersections with a triangle. (Ignore the texture coordinates for now.)<br>
+In computing the intersection of a ray with a triangle, there is a large amount of information that is
+re-computed, independent of the ray. Rather than computing this information each time, you can
+pre-compute the re-used information. To this end, the <A HREF="Documentation/class_ray_triangle.html">RayTriangle</A>
+class has members <code>Point3D v1</code>, <CODE>Point3D v2</code>, and <code>Plane3D plane</code>. You can
+set these values at the time that the triangle is set by implementing the <code>RayTriangle::initialize</code> method.
+
+<li>
+(1) <a href="Documentation/class_ray_scene.html#a8"><b>RayScene::GetColor</b></A>
+(<code>Ray/rayScene.todo.cpp</code>):<br>
+Return the color at the point of intersection using the ambient and emissive 
+properties of the <b><A href="Documentation/class_ray_material.html">RayMaterial</A></b> of the intersected shape.<br>
+To implement this, you will need to intersect the ray with the root of the scene graph, this is the <code>StaticRayGroup</CODE>
+pointed to by <A HREF="Documentation/class_ray_scene.html#o5"><b>RayScene::group</b></A>.
+
+<li>
+(2) To obtain the diffuse color contribution of the lights at the point of intersection, implement:
+<ul>
+<li>
+<A href="Documentation/class_ray_point_light.html#a2">
+<b>RayPointLight</b>::<b>getDiffuse</b></A> (<code>Ray/rayPointLight.todo.cpp</code>);
+<li>
+<A href="Documentation/class_ray_spot_light.html#a2">
+<b>RaySpotLight</b>::<b>getDiffuse</b></A> (<code>Ray/raySpotLight.todo.cpp</code>); and
+
+<li>
+<A href="Documentation/class_ray_directional_light.html#a2">
+<b>RayDirectionalLight</b>::<b>getDiffuse</b></A> (<code>Ray/rayDirectionalLight.todo.cpp</code>).
+</li>
+</ul>
+<li>
+(2) To obtain the specular color contribution of the lights at the point of intersection, implement:
+<ul>
+<li>
+<A href="Documentation/class_ray_point_light.html#a3">
+<b>RayPointLight</b>::<b>getSpecular</b></A> (<code>Ray/rayPointLight.todo.cpp</code>);
+
+<li>
+<A href="Documentation/class_ray_spot_light.html#a3">
+<b>RaySpotLight</b>::<b>getSpecular</b></A> (<code>Ray/raySpotLight.todo.cpp</code>); and
+<li>
+<A href="Documentation/class_ray_directional_light.html#a3">
+<b>RayDirectionalLight</b>::<b>getSpecular</b></A> (<code>Ray/rayDirectionalLight.todo.cpp</code>).
+
+</li>
+</ul>
+<li>
+(2) To determine if the point of intersection is in shadow from a particular light source, implement:
+<ul>
+<li>
+<A href="Documentation/class_ray_point_light.html#a4">
+<b>RayPointLight</b>::<b>isInShadow</b></A> (<code>Ray/rayPointLight.todo.cpp</code>);
+<li>
+<A href="Documentation/class_ray_spot_light.html#a4">
+<b>RaySpotLight</b>::<b>isInShadow</b></A> (<code>Ray/raySpotLight.todo.cpp</code>); and
+
+<li>
+<A href="Documentation/class_ray_directional_light.html#a4">
+<b>RayDirectionalLight</b>::<b>isInShadow</b></A> (<code>Ray/rayDirectionalLight.todo.cpp</code>)
+</li>
+</ul>
+In implementing this method, you will cast a ray from the intersection point in the direction of the
+light source. Keep in mind that for point- and spot-lights, you only need to test for
+intersections along a line segment (not the full ray), so you can use the <code>mx</code> parameter of the
+<A href="Documentation/class_ray_shape.html#a1"><b>RayShape</b>::<b>intersect</b></a>
+
+to limit the extent of the ray along which intersections are tested.
+<li>
+(1) <a href="Documentation/class_ray_scene.html#a8"><b>RayScene::GetColor</b></A>
+(<code>Ray/rayScene.todo.cpp</code>):<br>
+Modify the computation of the color at the point of intersection to take into account the
+diffuse and specular contributions of all of the light sources
+(<A href="Documentation/class_ray_light.html#a2"><b>RayLight</b>::<b>getDiffuse</b></A>,
+<A href="Documentation/class_ray_light.html#a3"><b>RayLight</b>::<b>getSpecular</b></a>), and using the 
+
+<A href="Documentation/class_ray_light.html#a4"><b>RayLight</b>::<b>isInShadow</b></a> method
+to determine if the light contributes.<br>
+In order to implement this method, you will need to consider the contributions of all the light
+sources in the scene. The number of lights is stored in:
+<B><A HREF="Documentation/class_ray_scene.html#o4">RayScene::lightNum</A></B> and the array of lights
+is stored in <B><A HREF="Documentation/class_ray_scene.html#o3">RayScene::lights</A></B>.
+<li>
+(2) <A href="Documentation/class_ray_group.html#a9">
+<b>RayGroup</b>::<b>intersect</b></A> (<code>Ray/rayGroup.todo.cpp</code>):<br>
+
+Modify this method so that it takes into account the local transformation returned by the call:
+<A href="Documentation/class_ray_group.html#a7"><b>RayGroup</b>::<b>getMatrix</b></a>.
+You can do this either by applying the transformation to the shape (which is difficult) or by using the transformation
+to convert the ray into object coordinates, computing the intersection in local coordinates, and then using the local
+transformation to convert intersection properties back into world coordinates (which is much easier).<br>
+Several pieces of advide when implementing this:
+<ul>
+<li> Even if the ray direction starts off as a unit vector, if you apply the transformation to the ray and the transformation 
+involves a scale change, then the direction of the transformed ray need no longer be a unit vector. (This means that the
+distance returned by the <A href="Documentation/class_ray_shape.html#a1"><b>RayShape</b>::<b>intersect</b></a>
+method may be a scaled version of the true distance.) Make sure to normalize your ray direction after applying the
+transformation to ensure that it is unit-length!
+<li> Keep in mind that transforming the surface normal at the point of intersection from local coordinates to global coordinates
+requires applying the inverse transpose of the matrix transformation.
+
+<li> Because you will be transforming the ray from local to global coordinates and vice versa many times, it makes sense to
+compute the inverses and or transposes once and then store them, rather than computing the matrix inverse for each ray. To
+help you with this, the code definese members <code>inverseTransform</code> and <code>normalTransform</code> of the
+class <A href="Documentation/class_static_ray_group.html">StaticRayGroup</A> for storing the necessary matrices. You
+should set these when the matrix is initialized in
+<A HREF="Documentation/class_static_ray_group.html#a1">StaticRayGroup::set</A> (<code>Ray/rayGroup.todo.cpp</code>)
+and then use the calls <A HREF="Documentation/class_ray_group.html#a8">RayGroup::getInverseMatrix</A> and
+
+<A HREF="Documentation/class_ray_group.html#a9">RayGroup::getNormalMatrix</A> to get a copy of the matrices.
+</ul>
+<li>
+(1) <a href="Documentation/class_ray_scene.html#a8"><b>RayScene::GetColor</b></A>
+(<code>Ray/rayScene.todo.cpp</code>):<br>
+Implement <a href="Documentation/class_ray_scene.html#e0"><b>RayScene::Reflect</b></A> (in <code>rayScene.todo.cpp</code>) so
+that given the normal <code>n</code> at a point of intersection, it returns the reflected direction of a ray hitting the
+surface with direction <code>v</code> and modify the implementation of <Code>RayScene::GetColor</CODE>
+
+to recursively cast reflected rays from the point of intersection and add the reflected color contribution to returned color value.<br>
+(Be sure to modulate the reflected color contribution by the specularity of the surface.)
+<li>
+(1) <a href="Documentation/class_ray_scene.html#a8"><b>RayScene::GetColor</b></A>
+(<code>Ray/rayScene.todo.cpp</code>):<br>
+Recursively cast refracted rays through the point of intersection and add the refracted color contribution to returned color value, ignoring
+the refraction index for now. (Be sure to modulate the reflacted color contribution by the transparency of the surface.)
+<li>
+(2) <a href="Documentation/class_ray_scene.html#a8"><b>RayScene::GetColor</b></A>
+(<code>Ray/rayScene.todo.cpp</code>):<br>
+
+To allow transparent objects to cast partial shadows, implement:
+<ul>
+<li>
+<A href="Documentation/class_ray_point_light.html#a5">
+<b>RayPointLight</b>::<b>transparency</b></A> (<code>Ray/rayPointLight.todo.cpp</code>);
+<li>
+<A href="Documentation/class_ray_spot_light.html#a5">
+<b>RaySpotLight</b>::<b>transparency</b></A> (<code>Ray/raySpotLight.todo.cpp</code>); and
+
+<li>
+<A href="Documentation/class_ray_directional_light.html#a5">
+<b>RayDirectionalLight</b>::<b>transparency</b></A> (<code>Ray/rayDirectionalLight.todo.cpp</code>);
+</li>
+</ul>
+Then, replace the call to
+<A href="Documentation/class_ray_light.html#a4"> <b>RayLight</b>::<b>isInShadow</b></A> with a call to
+
+<A href="Documentation/class_ray_light.html#a5"> <b>RayLight</b>::<b>transparency</b></A> to allow for partial
+shadowing.
+<li>
+(2) <a href="Documentation/class_ray_scene.html#a8"><b>RayScene::GetColor</b></A>
+(<code>Ray/rayScene.todo.cpp</code>):<br>
+Implement <a href="Documentation/class_ray_scene.html#e1"><b>RayScene::Refract</b></A> (in <code>rayScene.todo.cpp</code>)
+so that, given the index of refraction <code>ir</code> of a the surface at an intersection point
+and given the normal <code>n</code> at the point of intersection, it writes the refracted direction of a
+ray hitting the surface with direction <code>v</code> into the vector <code>refract</code>. The function should return
+a value of 0 if the ray could not be refracted (e.g. if computing the refraction direction would require evaluating the
+arcsin of a number with magnitude larger than 1 so that the angle of the ray is greater than the critical angle).
+Then, modify the implementation of <code>RayScene::GetColor</code> so that it uses the correct direction for computing
+the color contribution from refracted rays.
+
+<li><B>Accelerated Ray-Tracing</B>
+<UL>
+(3) Accelerate ray intersection tests with hierarchical bounding boxes. To do this you will have to:
+<ul>
+<li> <A href="Documentation/class_ray_shape.html#a2">
+<b>RayShape</b>::<b>setBoundingBox</b></A> (<code>Ray/ray*.todo.cpp</code>):<br>
+For each of the <b><A href="Documentation/class_ray_shape.html">RayShape</A></b> subclasses that you 
+have implemented (<code>RaySphere</code>, <code>RayTriangle</code>, etc.). This method will set the
+bounding box of the shape (<A HREF="Documentation/class_ray_shape.html#o0">RayShape::bBox</A>)
+and return the bounding box.
+
+<LI><A href="Documentation/class_ray_group.html#a8"><b>RayGroup</b>::<b>setBoundingBox</b></A> (<code>Ray/rayGroup.todo.cpp</code>):<br>
+To implement the <code>RayShape::getBoundingBox</code> method for For a <code>RayGroup</code>, accumulate the bounding boxes of all the child
+<b><A href="Documentation/class_ray_shape.html">RayShape</A></b>s, compute the bounding box of the transormed
+accumulation of bounding boxes, store  and return it.<br>
+
+(Note: When the parser is done reading the .ray file it automatically calls the 
+<A href="Documentation/class_ray_shape.html#a2"><b>RayShape</b>::<b>setBoundingBox</b></A>
+method for the root node, so if you have implemented this method for all of the subclasses of
+<b><A href="Documentation/class_ray_shape.html">RayShape</A></b>, the bounding boxes are already in place to be used for
+intersection queries, and you do not have to reset them.)
+<li><A href="Documentation/class_bounding_box3_d.html#a6"><b>BoundingBox3D</b>::<b>intersect</b></a> (<code>Util/geometry.todo.cpp</code>):<br>
+Return the distance along the ray to the nearest point of intersection with the interior of the bounding box. (If the ray starts off inside
+the bounding box, then a value of 0 should be returned.) If the ray does not intersect the bounding box, a negative value should be returned.
+
+<li><A href="Documentation/class_ray_group.html#a11"><b>RayGroup</b>::<b>intersect</b></A> (<code>Ray/rayGroup.todo.cpp</code>):<br>
+Modify this method to only test for an intersection or a ray with a child <A href="Documentation/class_ray_shape.html">RayShape</A></b>
+if the ray intersects the bounding box of the child.
+Keep in mind that if the value of the <code>mx</code> parameter is greater than 0 and the distance to the intersection
+of the ray with a child's bounding box is great than <code>mx</code>, you do not need to test for intersection with
+that child.<br>
+
+</ul>
+<li>
+(2) <A href="Documentation/class_ray_group.html#a11">
+<b>RayGroup</b>::<b>intersect</b></A> (<code>Ray/rayGroup.todo.cpp</code>)
+Modify this method so that it first computes the intersection with all the bounding boxes of all the child shapes,
+then sorts the shapes based on the proximity of their bounding box intersection and finally, tests the child
+<A href="Documentation/class_ray_shape.html">RayShape</A></b>s in order, allowing for early termination of
+the ray tracing.<br>
+To optimize this method you may want to use the
+<A href="Documentation/class_ray_group.html#o2">RayGroup::hits</A> member
+to store the shapes and the distance to the intersection of their bounding boxes.
+(The size of this array is set to be equal to the number of children, so you needn't worry about memory allocation.)
+You can then use the static
+
+<A href="Documentation/class_ray_shape_hit.html#e0"><b>RayShapeHit</b>::<b>Compare</b></a> method for sorting
+the shapes by calling something akin to:<br>
+<code>qsort(hits,hitNum,sizeof(RayShapeHit),RayShapeHit::Compare);</code><br>
+(Note that <code>hitNum</code> can be smaller than the number of child nodes, as you only need to consider those shapes
+whose bounding boxes were intersected by the ray.)
+</ul>
+<li>(2) <A href="Documentation/class_ray_triangle.html#a3">
+<b>RayTriangle</b>::<b>intersect</b></A> (<code>Ray/rayTriangle.todo.cpp</code>):<br>
+
+Modify this method so that it returns the texture coordinates at the point of intersection and modify
+<a href="Documentation/class_ray_scene.html#a8"><b>RayScene::GetColor</b></A>
+(<code>Ray/rayScene.todo.cpp</code>) to support texture mapping (with bilinear interpolation of texture samples).
+That is, instead of using the <a href="Documentation/class_ray_light.html#a2"><b>RayLight</b>::<b>getDiffuse</b></a>
+method to compute the diffuse color contribution, use the value read out from the texture map for the diffuse color.
+<li>
+(1)<A href="Documentation/class_ray_sphere.html#a3"> <b>RaySphere</b>::<b>intersect</b></a>
+
+(Ray/raySphere.todo.cpp):<br>
+Modify this method so it returns the texture coordinates at the point of intersection (longitude and latitude).<br>
+(If you haven't already done so for the triangle, you will also need to modify
+<a href="Documentation/class_ray_scene.html#a8"><b>RayScene::GetColor</b></A>
+(<code>Ray/rayScene.todo.cpp</code>) to support texture mapping.)
+<li>
+(1) Implement a jittered supersampling scheme to reduce aliasing by casting multiple rays per pixel, randomly
+jittered about pixel centers, and averaging the radiance samples.
+<li>
+(1) Generate a 3D scene and save it as a .ray file. The scene should have both spheres and triangles, should have
+all three types of light sources in it, and should contain at least one primitive with a transparent material.
+<li>
+(1) Treat 
+<A href="Documentation/class_ray_point_light.html"><b>RayPointLight</b></a>s and
+
+<A href="Documentation/class_ray_spot_light.html"><b>RaySpotLight</b></a>s
+lights as having a finite 'area' and cast a collection of rays during shadow checking to generate soft shadows.
+That is, instead of casting just a single ray towards the light to compute the shadow component of the
+intersection point, cast multiple rays in the direction of the light and use the average value as the shadow components.
+<li>
+(1)<A href="Documentation/class_ray_box.html#a3">
+<b>RayBox</b>::<b>intersect</b></a> (<code>Ray/rayBox.todo.cpp</code>):<br>
+Compute ray intersections with a box.
+<li>
+(1)<A href="Documentation/class_ray_cylinder.html#a3">
+
+<b>RayCylinder</b>::<b>intersect</b></a> (<code>Ray/rayCylinder.todo.cpp</code>):<br>
+Compute ray intersections with a cylinder.
+<li>
+(1)<A href="Documentation/class_ray_cone.html#a3">
+<b>RayCone</b>::<b>intersect</b></a> (<code>Ray/rayCone.todo.cpp</code>):<br>
+
+Compute ray intersections with a one.
+<li>
+(2) Implement procedural texture mapping with <a href="http://freespace.virgin.net/hugo.elias/models/m_perlin.htm">
+Perlin noise functions</a> to create 3-D solid wood, marble, etc.
+<li>
+(1) Implement <b>bump mapping</b> for either or both texturing schemes.
+<li>
+(1) Simulate the behavior of a <b>real camera lens</b> by implementing the 
+procedure in this SIGGRAPH <a href="../Readings/Kolb95.pdf">paper</a>.
+
+<li>
+(2) <b>Accelerate ray intersections</b> with an octree or BSP spatial data structure.
+<li>
+(?) Impress us with something we hadn't considered...
+</ul>
+
+The assignment will be graded out of <B>30 points</B>. In addition to implementing these features, there are several other ways to get more points:
+<UL>
+    <LI>(1) Submitting one or more images for the art contests.
+    <LI>(1) Submitting one or more .ray files for the art contests.
+    <LI>(2) winning the regular art contest,
+    <LI>(2) winning the .ray file art contest,
+    <li>(?) Implementing an accelerated ray-tracer that can ray-trace a <b>very</b> large model in very little time
+   (e.g. a few minutes for a model consisting of hundreds of thousands of triangles, with a recursion depth of 5).
+
+</UL>
+For images or movies that you submit, you also have to submit the sequence of commands used to created 
+them, otherwise they will not be considered valid.
+<P>
+It is possible to get more than 30 points. However, after 30 points, each point is divided by 2, and after
+32 points, each point is divided by 4. If your raw score is 29, your final score will be 29. If the raw score
+is 33, you'll get 31.25. For a raw score of 36, you'll get 32.</P>
+</blockquote>
+<hr>
+<h3>What to Submit</h3>
+Submission intstructions are specified <A HREF="../assignments.html#submitting">here</A>.<br>
+Please include the following in your submission: 
+  <UL>
+    <LI>the complete source code (with Makefile if compiling under Linux); 
+    <LI>any .ray files you created.
+    <LI>images for the art contest
+    <li>a writeup.
+  </UL>
+
+</BLOCKQUOTE>
+<HR>
+
+</body>
+</html>
